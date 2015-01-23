@@ -1,0 +1,176 @@
+/*
+ * parser.cup -- SPL parser specification
+ */
+
+
+package parse;
+
+import java_cup.runtime.*;
+import absyn.*;
+import sym.Sym;
+
+
+parser code {:
+
+  public void syntax_error(Symbol currToken) {
+    System.out.println(
+      "**** Error: syntax error" +
+      " in line " + currToken.left +
+      ", column " + currToken.right 
+    );
+    System.exit(0);
+  }
+
+:}
+
+/* Terminals (tokens returned by the scanner). */
+terminal Symbol ARRAY, IF, ELSE, TYPE, OF, PROC, REF, VAR, WHILE, ASGN; 
+terminal     LPAREN, RPAREN, LBRACK, RBRACK, LCURL, RCURL;
+terminal     PLUS, MINUS, STAR, SLASH;
+terminal     EQ, NE, LT, LE, GT, GE;
+terminal     COLON, COMMA, SEMIC; 
+terminal     String IDENT;
+terminal     int INTLIT;
+
+
+/* Non terminals */
+non terminal 	program;
+non terminal 	DecList dec_list, parameter_list, declaration_list; 
+non terminal 	Dec dec_elem, declaration, parameter;
+non terminal 	TypeDec type_dec;
+non terminal	Ty type;
+non terminal    ProcDec proc_def;
+non terminal 	StmList statement_list;
+non terminal	Stm statement;
+non terminal 	Exp expr_ext, expr_comp, expr, term, faktor;
+non terminal	ExpList arg_list;
+non terminal	Var left_hand, array; 
+
+		
+
+start with program;
+
+
+			
+/* The grammar */
+program    		::= dec_list:list 			
+			  {: RESULT = list; :};
+	
+dec_list 		::= dec_elem:dE dec_list:list 		
+			  {: RESULT = new DecList(dE, list); :}
+			| /*epsilon*/				
+			  {: RESULT = new DecList(); :};
+
+dec_elem		::= type_dec:tD 			
+			  {: RESULT = tD; :}
+			| proc_def:pD				
+			  {: RESULT = pD; :};
+			
+type_dec    		::= TYPE:t IDENT:i EQ type:ty SEMIC	
+			  {: RESULT = new TypeDec(tleft, tright, Sym.newSym(i), ty); :} ;
+
+type			::= IDENT:i 	
+			  {: RESULT = new NameTy(ileft, iright, Sym.newSym(i));:} 
+			| ARRAY:a LBRACK INTLIT:i RBRACK OF type:ty 
+			  {: RESULT = new ArrayTy(aleft, aright, i, ty); :};
+			
+proc_def		::= PROC IDENT:i LPAREN parameter_list:parList RPAREN LCURL declaration_list:decList statement_list:stmList RCURL
+			  {: RESULT = new ProcDec(ileft, iright, Sym.newSym(i), parList, decList, stmList); :};
+			
+declaration_list	::= /*epsilon*/ 
+			  {: RESULT = new DecList(); :}
+			| declaration:dec declaration_list:dList
+			  {: RESULT = new DecList(dec, dList); :};
+			
+declaration		::= VAR IDENT:i COLON type:ty SEMIC
+			  {: RESULT = new VarDec(ileft, iright, Sym.newSym(i), ty); :};
+			
+statement_list		::= /*epsilon*/ 
+			  {: RESULT = new StmList(); :}
+			| statement:stm statement_list:sList
+			  {: RESULT = new StmList(stm, sList); :};
+			
+statement		::= SEMIC:s
+			  {: RESULT = new EmptyStm(sleft, sright); :}
+			| LCURL:l statement_list:sList RCURL
+			  {: RESULT = new CompStm(lleft, lright, sList); :}
+			| left_hand:lhs ASGN expr:e SEMIC
+			  {: RESULT = new AssignStm(lhsleft, lhsright, lhs, e); :}
+			| IF:i LPAREN expr_ext:ee RPAREN statement:stm
+			  {: RESULT = new IfStm(ileft, iright, ee, stm, new EmptyStm(ileft, iright)); :} 
+			| IF:i LPAREN expr_ext:ee RPAREN statement:stm1 ELSE statement:stm2
+			  {: RESULT = new IfStm(ileft, iright, ee, stm1, stm2); :}
+			| WHILE:w LPAREN expr_ext:ee RPAREN statement:stm
+			  {: RESULT = new WhileStm(wleft, wright, ee, stm); :}
+			| IDENT:i LPAREN arg_list:aList RPAREN SEMIC
+			  {: RESULT = new CallStm(ileft, iright, Sym.newSym(i), aList); :};
+				
+left_hand		::= IDENT:i
+			  {: RESULT = new SimpleVar(ileft, iright, Sym.newSym(i)); :}
+			| array:a
+			  {: RESULT = a; :};
+
+array			::= left_hand:lhs LBRACK expr:e RBRACK
+			  {: RESULT = new ArrayVar(lhsleft, lhsright, lhs, e); :};
+				
+arg_list		::= /*epsilon*/
+			  {: RESULT = new ExpList(); :}
+			| expr:e
+			  {: RESULT = new ExpList(e, new ExpList()); :}
+			| expr:e COMMA arg_list:aList
+			  {: RESULT = new ExpList(e, aList); :};	
+			
+parameter_list		::= /*epsilon*/
+			  {: RESULT = new DecList(); :}	
+			| parameter:p
+			  {: RESULT = new DecList(p, new DecList()); :}
+			| parameter:p COMMA parameter_list:pList
+			  {: RESULT = new DecList(p, pList); :};
+			
+parameter		::= IDENT:i COLON type:ty
+			  {: RESULT = new ParDec(ileft, iright, Sym.newSym(i), ty, false); :}
+			| REF IDENT:i COLON type:ty
+			  {: RESULT = new ParDec(ileft, iright, Sym.newSym(i), ty, true); :};
+			  
+expr			::= expr:e PLUS term:t
+			  {: RESULT = new OpExp(eleft, eright, OpExp.ADD, e, t); :}
+			| expr:e MINUS term:t
+			  {: RESULT = new OpExp(eleft, eright, OpExp.SUB, e, t); :}
+			| term:t
+			  {: RESULT = t; :};	
+			
+term			::= term:t STAR faktor:f
+			  {: RESULT = new OpExp(tleft, tright, OpExp.MUL, t, f); :}
+			| term:t SLASH faktor:f
+			  {: RESULT = new OpExp(tleft, tright, OpExp.DIV, t, f); :}
+			| faktor:f
+			  {: RESULT = f; :};
+			
+faktor			::= LPAREN expr:e RPAREN
+			  {: RESULT = e; :}
+			| INTLIT:i
+			  {: RESULT = new IntExp(ileft, iright, i); :}
+			| left_hand:lhs
+			  {: RESULT = new VarExp(lhsleft, lhsright, lhs); :}	
+			| MINUS:m faktor:f
+			  {: RESULT = new OpExp(mleft, mright, OpExp.MUL, new IntExp(fleft,fright, -1), f); :};
+			
+expr_ext		::= expr_comp:ec
+			  {: RESULT = ec; :}
+			| expr:e
+			  {: RESULT = e; :};
+
+expr_comp		::= expr:e1 LT expr:e2
+			  {: RESULT = new OpExp(e1left, e1right, OpExp.LST, e1, e2); :}
+			| expr:e1 LE expr:e2
+			  {: RESULT = new OpExp(e1left, e1right, OpExp.LSE, e1, e2); :}
+			| expr:e1 GT expr:e2
+			  {: RESULT = new OpExp(e1left, e1right, OpExp.GRT, e1, e2); :}
+			| expr:e1 GE expr:e2
+			  {: RESULT = new OpExp(e1left, e1right, OpExp.GRE, e1, e2); :}
+			| expr:e1 EQ expr:e2
+			  {: RESULT = new OpExp(e1left, e1right, OpExp.EQU, e1, e2); :}
+			| expr:e1 NE expr:e2
+			  {: RESULT = new OpExp(e1left, e1right, OpExp.NEQ, e1, e2); :};	
+			
+
