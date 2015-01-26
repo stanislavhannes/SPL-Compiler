@@ -89,6 +89,7 @@ public class Varalloc implements Visitor {
 
         ProcEntry entry = (ProcEntry) globalTable.lookup(callStm.name);
         int argAreaSize = entry.argAreaSize;
+        entry.stmCall = true;
 
         if (procEntry.outAreaSize < argAreaSize)
             procEntry.outAreaSize = argAreaSize;

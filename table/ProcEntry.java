@@ -13,6 +13,7 @@ public class ProcEntry extends Entry {
   public ParamTypeList paramTypes;
   public Table localTable;
   public int argAreaSize;   //size of argument area
+  public boolean stmCall = false;
   public int varAreaSize;   // size of localvar area
   public int outAreaSize;   // size of outgoing area
 
