@@ -26,7 +26,6 @@ public class Varalloc implements Visitor {
     private ProcEntry procEntry = null;
     private boolean firstCompute = true;
 
-
     public Varalloc(Table t, boolean s) {
         globalTable = t;
         showVarAlloc = s;

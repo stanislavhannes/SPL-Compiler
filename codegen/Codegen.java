@@ -18,6 +18,7 @@ public class Codegen implements visitor.Visitor {
   private static final int R_RET = 31; // return address
   private static final int R_FP = 25; // frame pointer
   private static final int R_SP = 29; // stack pointer
+  private int freeReg = 8;
   private Table globalTable;
   private PrintWriter outWriter;
 
@@ -46,7 +47,6 @@ public class Codegen implements visitor.Visitor {
   public void genCode(Absyn program) {
     assemblerProlog();
     ((DecList) program).accept(this);
-
 
   }
 
@@ -96,6 +96,14 @@ public class Codegen implements visitor.Visitor {
 
 
   public void visit(OpExp opExp) {
+
+    opExp.left.accept(this);
+    freeReg++;
+    if (freeReg > R_MAX){
+      throw new RuntimeException("Ausdruck zu kompliziert");
+    }
+    opExp.right.accept(this);
+
 
   }
 

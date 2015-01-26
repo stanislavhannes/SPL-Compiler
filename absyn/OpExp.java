@@ -8,7 +8,7 @@ package absyn;
 import visitor.Visitor;
 import visitor.VisitorElement;
 
-public class OpExp extends Exp implements VisitorElement {
+public class OpExp extends Exp {
 
     public final static int EQU = 0;
     public final static int NEQ = 1;
@@ -79,6 +79,7 @@ public class OpExp extends Exp implements VisitorElement {
         right.show(n + 1);
         say(")");
     }
+
 
     public void accept(Visitor v) {
         v.visit(this);
