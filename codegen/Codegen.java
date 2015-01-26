@@ -148,11 +148,11 @@ public class Codegen implements visitor.Visitor {
       if (head.getClass() == CallStm.class) {
         ((CallStm) head).accept(this);
 
-      } else if (head.getClass() == IfStm.class) {
-        ((IfStm) head).accept(this);
-
       } else if (head.getClass() == WhileStm.class) {
         ((WhileStm) head).accept(this);
+
+      } else if (head.getClass() == IfStm.class) {
+        ((IfStm) head).accept(this);
 
       } else if (head.getClass() == CompStm.class) {
         ((CompStm) head).accept(this);
