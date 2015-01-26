@@ -68,13 +68,13 @@ public class Codegen implements visitor.Visitor {
   }
 
   public void visit(DecList decList) {
-    Dec node;
+    Dec head;
 
     while (!decList.isEmpty) {
-      node = decList.head;
+      head = decList.head;
 
-      if (node.getClass() == ProcDec.class) {
-        this.visit((ProcDec) node);
+      if (head.getClass() == ProcDec.class) {
+        this.visit((ProcDec) head);
       }
 
       decList = decList.tail;
@@ -141,7 +141,24 @@ public class Codegen implements visitor.Visitor {
   }
 
   public void visit(StmList stmList) {
+    Stm head;
 
+    if (!stmList.isEmpty) {
+      head = stmList.head;
+      if (head.getClass() == CallStm.class) {
+        ((CallStm) head).accept(this);
+
+      } else if (head.getClass() == IfStm.class) {
+        ((IfStm) head).accept(this);
+
+      } else if (head.getClass() == WhileStm.class) {
+        ((WhileStm) head).accept(this);
+
+      } else if (head.getClass() == CompStm.class) {
+        ((CompStm) head).accept(this);
+      }
+    }
+    stmList = stmList.tail;
   }
 
   public void visit(VarExp varExp) {
