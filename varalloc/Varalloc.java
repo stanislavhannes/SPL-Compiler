@@ -145,6 +145,8 @@ public class Varalloc implements Visitor {
     }
 
     public void visit(IfStm ifStm) {
+
+        //TODO: Visitor Muster auch hier umsetzen
         Stm thenPart = ifStm.thenPart;
         Stm elsePart = ifStm.elsePart;
 

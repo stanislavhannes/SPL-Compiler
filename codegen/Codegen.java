@@ -50,23 +50,6 @@ public class Codegen implements visitor.Visitor {
 
   }
 
-
-  public void visit(ArrayVar arrayVar) {
-
-  }
-
-  public void visit(AssignStm assignStm) {
-
-  }
-
-  public void visit(CallStm callStm) {
-
-  }
-
-  public void visit(CompStm compStm) {
-
-  }
-
   public void visit(DecList decList) {
     Dec head;
 
@@ -79,32 +62,6 @@ public class Codegen implements visitor.Visitor {
 
       decList = decList.tail;
     }
-  }
-
-
-  public void visit(ExpList expList) {
-
-  }
-
-  public void visit(IfStm ifStm) {
-
-  }
-
-  public void visit(IntExp intExp) {
-
-  }
-
-
-  public void visit(OpExp opExp) {
-
-    opExp.left.accept(this);
-    freeReg++;
-    if (freeReg > R_MAX){
-      throw new RuntimeException("Ausdruck zu kompliziert");
-    }
-    opExp.right.accept(this);
-
-
   }
 
   public void visit(ProcDec procDec) {
@@ -144,15 +101,14 @@ public class Codegen implements visitor.Visitor {
     outWriter.format("\tjr\t$%" + R_RET + "\t\t\t; return\n");
   }
 
-  public void visit(SimpleVar simpleVar) {
-
-  }
-
   public void visit(StmList stmList) {
     Stm head;
 
-    if (!stmList.isEmpty) {
+    while (!stmList.isEmpty) {
       head = stmList.head;
+      head.accept(this);
+      stmList = stmList.tail;
+      /*
       if (head.getClass() == CallStm.class) {
         ((CallStm) head).accept(this);
 
@@ -164,12 +120,83 @@ public class Codegen implements visitor.Visitor {
 
       } else if (head.getClass() == CompStm.class) {
         ((CompStm) head).accept(this);
-      }
+      }*/
     }
-    stmList = stmList.tail;
+  }
+
+  public void visit(AssignStm assignStm) {
+
+  }
+
+  public void visit(CallStm callStm) {
+
+  }
+
+  public void visit(CompStm compStm) {
+
+  }
+
+
+  public void visit(ExpList expList) {
+
+  }
+
+  public void visit(IfStm ifStm) {
+
+  }
+
+  public void visit(OpExp opExp) {
+
+    opExp.left.accept(this);
+    freeReg++;
+    if (freeReg > R_MAX) {
+      throw new RuntimeException("Ausdruck zu kompliziert");
+    }
+    opExp.right.accept(this);
+
+    //switch case operation
+
+    //freeReg--
+
+
+  }
+
+
+  public void visit(IntExp intExp) {
+    outWriter.format("\tadd\t$" + freeReg + ",$0," + intExp.val + "\t\t; intExp\n");
   }
 
   public void visit(VarExp varExp) {
+    varExp.accept(this);
+  }
+
+  public void visit(SimpleVar simpleVar) {
+    VarEntry entry = (VarEntry) globalTable.lookup(simpleVar.name);
+    outWriter.format("\tadd\t$" + freeReg + ",$" + R_FP + "," + entry.offset + "\t\t; SimpleVar " + simpleVar.name.toString() + " \n");
+    outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");
+
+  }
+
+  public void visit(ArrayVar arrayVar) {
+
+    int index, arrayByteSize;
+    if (freeReg + 2 > R_MAX) throw new RuntimeException("Ausdruck zu kompliziert");
+
+    arrayVar.index.accept(this);  // free 9
+    freeReg++;
+    arrayVar.var.accept(this); //freereg = 8
+
+
+    //casten ob arrayvar.var simlevar
+  /*  if (arrayVar.index.getClass() == Arr)
+
+      basetypesize = node->type_t->size;
+    actualarraysize = node->u.arrayVar.var->type_t->u.arrayType.size;
+
+    outWriter.format("\tadd\t$%d,$%d,%d\n", r + 2, 0, actualarraysize)
+    fprintf(file, "\tbgeu\t$%d,$%d,_indexError\n", r+1, r+2);
+    fprintf(file, "\tmul\t$%d,$%d,%d\n", r+1, r+1, basetypesize);
+    fprintf(file, "\tadd\t$%d,$%d,$%d\n", r, r, r+1);*/
 
   }
 
@@ -177,11 +204,12 @@ public class Codegen implements visitor.Visitor {
 
   }
 
+
   //These Methods are irrelevant for the code generation
   public void visit(NameTy nameTy) {
   }
 
-  public void visit(ArrayTy aarrayTy) {
+  public void visit(ArrayTy arrayTy) {
   }
 
   public void visit(TypeDec typeDec) {

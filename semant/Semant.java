@@ -14,6 +14,8 @@ import types.PrimitiveType;
 import types.Type;
 import varalloc.Varalloc;
 
+
+//TODO:Reihenfolge beachten
 public class Semant {
 
     PrimitiveType builtinType_int, builtinType_bool;
