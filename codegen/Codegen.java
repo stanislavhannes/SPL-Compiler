@@ -179,24 +179,24 @@ public class Codegen implements visitor.Visitor {
 
   public void visit(ArrayVar arrayVar) {
 
-    int index, arrayByteSize;
-    if (freeReg + 2 > R_MAX) throw new RuntimeException("Ausdruck zu kompliziert");
+    if (freeReg + 1 > R_MAX) throw new RuntimeException("Ausdruck zu kompliziert");
 
-    arrayVar.index.accept(this);  // free 9
+    //arrayVar.var.accept(this); //freereg = 8
     freeReg++;
-    arrayVar.var.accept(this); //freereg = 8
+    arrayVar.index.accept(this);  // free 8
 
+    SimpleVar var = (SimpleVar)arrayVar.var;
+    VarEntry entry = (VarEntry)globalTable.lookup(var.name);
+    ArrayType aType = (ArrayType)entry.type;
+    //9
 
-    //casten ob arrayvar.var simlevar
-  /*  if (arrayVar.index.getClass() == Arr)
-
-      basetypesize = node->type_t->size;
+    basetypesize = node->type_t->size;
     actualarraysize = node->u.arrayVar.var->type_t->u.arrayType.size;
 
-    outWriter.format("\tadd\t$%d,$%d,%d\n", r + 2, 0, actualarraysize)
-    fprintf(file, "\tbgeu\t$%d,$%d,_indexError\n", r+1, r+2);
-    fprintf(file, "\tmul\t$%d,$%d,%d\n", r+1, r+1, basetypesize);
-    fprintf(file, "\tadd\t$%d,$%d,$%d\n", r, r, r+1);*/
+    outWriter.format("\tadd\t$" + freeReg + ",$" + 0 + "," +aType.size + "\n" );
+    outWriter.format("\tbgeu\t$" + (freeReg - 1) + ",$" + freeReg + ",_indexError\n");
+    outWriter.format("\tmul\t$" + (freeReg - 1) + ",$" + (freeReg -1) + ",$" + aType.baseType.getByteSize() + " \n" );
+    outWriter.format("\tadd\t$%d,$%d,$%d\n", r, r, r+1);
 
   }
 
