@@ -18,7 +18,7 @@ public class Codegen implements visitor.Visitor {
   private static final int R_RET = 31; // return address
   private static final int R_FP = 25; // frame pointer
   private static final int R_SP = 29; // stack pointer
-  int elseLabel = -1;
+    int elseLabel = 0;
   private int freeReg = 8;
   private Table globalTable;
   private Table localTable;
@@ -99,7 +99,7 @@ public class Codegen implements visitor.Visitor {
 
     outWriter.format("\tldw\t$" + R_FP + ",$" + R_SP + "," + oldFP + "\t\t; restore old frame pointer\n");
     outWriter.format("\tadd\t$" + R_SP + ",$" + R_SP + "," + frameSize + "\t\t; release frame\n");
-    outWriter.format("\tjr\t$%" + R_RET + "\t\t\t; return\n");
+      outWriter.format("\tjr\t$" + R_RET + "\t\t\t; return\n");
   }
 
   public void visit(StmList stmList) {
@@ -117,13 +117,12 @@ public class Codegen implements visitor.Visitor {
     if (freeReg + 1 > R_MAX) {
       throw new RuntimeException("Ausdruck zu kompliziert");
     }
-    assignStm.var.accept(this);   //freeReg -1
+      assignStm.var.accept(this);
     freeReg++;
-    assignStm.exp.accept(this);  //freeReg
+      assignStm.exp.accept(this);
 
-
-    outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");  //ldw fraglich
-    outWriter.format("\tstw\t$" + freeReg + ",$" + (freeReg - 1) + "," + 0 + "\n");
+      // outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");  //ldw fraglich
+      outWriter.format("\tstw\t$" + freeReg + ",$" + (freeReg - 1) + "," + 0 + "\t\t; AssignStm\n");
 
     freeReg--;
 
@@ -184,25 +183,25 @@ public class Codegen implements visitor.Visitor {
     boolean hasElse = true;
     if (ifStm.elsePart.getClass() == EmptyStm.class) hasElse = false;
 
-    elseLabel = newLabel();  //1
+      elseLabel = newLabel();
     if (hasElse) {
-      endLabel = newLabel();  //2
+        endLabel = newLabel();
     }
 
     ifStm.test.accept(this);
     ifStm.thenPart.accept(this);
 
     if (hasElse) {
-      outWriter.format("\tj\tL" + endLabel + "\n");  //jump to 2
+        outWriter.format("\tj\tL" + endLabel + "\n");
     }
 
-    outWriter.format("\tL" + elseLabel + ":\n");  //1
+      outWriter.format("\tL" + elseLabel + ":\n");
     if (hasElse) {
       ifStm.elsePart.accept(this);
-      outWriter.format("\tL" + endLabel + ":\n");  //2
+        outWriter.format("\tL" + endLabel + ":\n");
     }
 
-    elseLabel = elseLabel_old; //elseLabel = 0
+      elseLabel = elseLabel_old;
 
   }
 
@@ -215,7 +214,6 @@ public class Codegen implements visitor.Visitor {
     freeReg++;
     opExp.right.accept(this);
 
-    //switch case operation
     switch (opExp.op) {
       case OpExp.ADD:
         outWriter.format("\tadd\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",$" + freeReg + "\n");
@@ -266,20 +264,24 @@ public class Codegen implements visitor.Visitor {
 
   public void visit(SimpleVar simpleVar) {
     VarEntry entry = (VarEntry) localTable.lookup(simpleVar.name);
-    outWriter.format("\tadd\t$" + freeReg + ",$" + R_FP + "," + entry.offset + "\t\t; SimpleVar " + simpleVar.name.toString() + " \n");
-    //TODO: minus vom sp aus und ld rr0
+      if (entry.isRef) {
+          outWriter.format("\tadd\t$" + freeReg + ",$" + R_FP + "," + entry.offset + "\t\t; Parameter " + simpleVar.name.toString() + " \n");
+          outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");
+      } else {
+          outWriter.format("\tadd\t$" + freeReg + ",$" + R_FP + "," + ((-1) * entry.offset) + "\t\t; SimpleVar " + simpleVar.name.toString() + " \n");
+      }
+
   }
 
   public void visit(ArrayVar arrayVar) {
 
-    //8
     if (freeReg + 2 > R_MAX) throw new RuntimeException("Ausdruck zu kompliziert");
 
-    arrayVar.var.accept(this); //freereg = 8
+      arrayVar.var.accept(this);
     freeReg++;
-    arrayVar.index.accept(this);  // free 9
+      arrayVar.index.accept(this);
     freeReg++;
-    //free 10
+
     SimpleVar var = (SimpleVar)arrayVar.var;
     VarEntry entry = (VarEntry) localTable.lookup(var.name);
     ArrayType aType = (ArrayType)entry.type;
@@ -287,7 +289,7 @@ public class Codegen implements visitor.Visitor {
 
     outWriter.format("\tadd\t$" + freeReg + ",$" + 0 + "," + aType.size + "\n");
     outWriter.format("\tbgeu\t$" + (freeReg - 1) + ",$" + freeReg + ",_indexError\n");
-    outWriter.format("\tmul\t$" + (freeReg - 1) + ",$" + (freeReg -1) + ",$" + aType.baseType.getByteSize() + " \n" );
+      outWriter.format("\tmul\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + "," + aType.baseType.getByteSize() + " \n");
     outWriter.format("\tadd\t$" + (freeReg - 2) + ",$" + (freeReg - 2) + ",$" + (freeReg - 1) + "\n");
 
     freeReg = freeReg - 2;
