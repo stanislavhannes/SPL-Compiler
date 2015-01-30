@@ -145,39 +145,8 @@ public class Varalloc implements Visitor {
     }
 
     public void visit(IfStm ifStm) {
-
-        //TODO: Visitor Muster auch hier umsetzen
-        Stm thenPart = ifStm.thenPart;
-        Stm elsePart = ifStm.elsePart;
-
-        //thenPart
-        if (thenPart.getClass() == CallStm.class) {
-            ((CallStm) thenPart).accept(this);
-
-        } else if (thenPart.getClass() == IfStm.class) {
-            ((IfStm) thenPart).accept(this);
-
-        } else if (thenPart.getClass() == WhileStm.class) {
-            ((WhileStm) thenPart).accept(this);
-
-        } else if (thenPart.getClass() == CompStm.class) {
-            ((CompStm) thenPart).accept(this);
-        }
-
-        //elsePart
-        if (elsePart.getClass() == CallStm.class) {
-            ((CallStm) elsePart).accept(this);
-
-        } else if (elsePart.getClass() == IfStm.class) {
-            ((IfStm) elsePart).accept(this);
-
-        } else if (elsePart.getClass() == WhileStm.class) {
-            ((WhileStm) elsePart).accept(this);
-
-        } else if (elsePart.getClass() == CompStm.class) {
-            ((CompStm) elsePart).accept(this);
-        }
-
+        ifStm.thenPart.accept(this);
+        ifStm.elsePart.accept(this);
 
     }
 
@@ -232,20 +201,9 @@ public class Varalloc implements Visitor {
 
         while (!stmList.isEmpty) {
             head = stmList.head;
-            if (head.getClass() == CallStm.class) {
-                ((CallStm) head).accept(this);
-
-            } else if (head.getClass() == IfStm.class) {
-                ((IfStm) head).accept(this);
-
-            } else if (head.getClass() == WhileStm.class) {
-                ((WhileStm) head).accept(this);
-
-            } else if (head.getClass() == CompStm.class) {
-                ((CompStm) head).accept(this);
-            }
-
+            head.accept(this);
             stmList = stmList.tail;
+
         }
     }
 
@@ -270,22 +228,7 @@ public class Varalloc implements Visitor {
     }
 
     public void visit(WhileStm whileStm) {
-
-        Stm body = whileStm.body;
-
-        if (body.getClass() == CallStm.class) {
-            ((CallStm) body).accept(this);
-
-        } else if (body.getClass() == IfStm.class) {
-            ((IfStm) body).accept(this);
-
-        } else if (body.getClass() == WhileStm.class) {
-            ((WhileStm) body).accept(this);
-
-        } else if (body.getClass() == CompStm.class) {
-            ((CompStm) body).accept(this);
-        }
-
+        whileStm.body.accept(this);
     }
 
 
