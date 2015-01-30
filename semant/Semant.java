@@ -15,7 +15,9 @@ import types.Type;
 import varalloc.Varalloc;
 
 
-//TODO:Reihenfolge beachten
+//TODO:Reihenfolge der Fehlerausgabe beachten
+//TODO:Diese Klasse mit dem Visitor Patter umsetzen
+
 public class Semant {
 
     PrimitiveType builtinType_int, builtinType_bool;

@@ -11,6 +11,8 @@ import table.*;
 import types.*;
 import varalloc.Varalloc;
 
+
+//TODO: Produziert fehlerhaften AsseblerCode
 public class Codegen implements visitor.Visitor {
 
   private static final int R_MIN = 8;  // lowest free register
@@ -18,7 +20,8 @@ public class Codegen implements visitor.Visitor {
   private static final int R_RET = 31; // return address
   private static final int R_FP = 25; // frame pointer
   private static final int R_SP = 29; // stack pointer
-    int elseLabel = 0;
+    private int numLabels = 0;
+    private int elseLabel;
   private int freeReg = 8;
   private Table globalTable;
   private Table localTable;
@@ -58,7 +61,6 @@ public class Codegen implements visitor.Visitor {
     while (!decList.isEmpty) {
       head = decList.head;
       head.accept(this);
-
 
       decList = decList.tail;
     }
@@ -144,7 +146,7 @@ public class Codegen implements visitor.Visitor {
       head = expList.head;
       head.accept(this);
 
-      if (paramHead.isRef) {
+        if (!paramHead.isRef) {
         outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + "\n");
       }
 
@@ -162,7 +164,6 @@ public class Codegen implements visitor.Visitor {
   }
 
   private int newLabel() {
-    int numLabels = 0;
     return numLabels++;
   }
 
@@ -170,11 +171,11 @@ public class Codegen implements visitor.Visitor {
     int label = newLabel();
     elseLabel = newLabel();
 
-    outWriter.format("\tL" + label + ":\n");
+      outWriter.format("L" + label + ":\n");
     whileStm.test.accept(this);
     whileStm.body.accept(this);
     outWriter.format("\tj\tL" + label + "\n");
-    outWriter.format("\tL" + elseLabel + ":\n");
+      outWriter.format("L" + elseLabel + ":\n");
   }
 
   public void visit(IfStm ifStm) {
@@ -195,10 +196,10 @@ public class Codegen implements visitor.Visitor {
         outWriter.format("\tj\tL" + endLabel + "\n");
     }
 
-      outWriter.format("\tL" + elseLabel + ":\n");
+      outWriter.format("L" + elseLabel + ":\n");
     if (hasElse) {
       ifStm.elsePart.accept(this);
-        outWriter.format("\tL" + endLabel + ":\n");
+        outWriter.format("L" + endLabel + ":\n");
     }
 
       elseLabel = elseLabel_old;
@@ -211,8 +212,10 @@ public class Codegen implements visitor.Visitor {
       throw new RuntimeException("Ausdruck zu kompliziert");
     }
     opExp.left.accept(this);
+      outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");
     freeReg++;
     opExp.right.accept(this);
+      outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");
 
     switch (opExp.op) {
       case OpExp.ADD:
