@@ -18,8 +18,10 @@ public class Codegen implements visitor.Visitor {
   private static final int R_RET = 31; // return address
   private static final int R_FP = 25; // frame pointer
   private static final int R_SP = 29; // stack pointer
+  int elseLabel = -1;
   private int freeReg = 8;
   private Table globalTable;
+  private Table localTable;
   private PrintWriter outWriter;
 
   public Codegen(Table t, Writer w) {
@@ -55,10 +57,8 @@ public class Codegen implements visitor.Visitor {
 
     while (!decList.isEmpty) {
       head = decList.head;
+      head.accept(this);
 
-      if (head.getClass() == ProcDec.class) {
-        this.visit((ProcDec) head);
-      }
 
       decList = decList.tail;
     }
@@ -66,6 +66,7 @@ public class Codegen implements visitor.Visitor {
 
   public void visit(ProcDec procDec) {
     ProcEntry entry = (ProcEntry) globalTable.lookup(procDec.name);
+    localTable = entry.localTable;
     String name = procDec.name.toString();
     int frameSize, oldFP, oldRET;
 
@@ -108,56 +109,149 @@ public class Codegen implements visitor.Visitor {
       head = stmList.head;
       head.accept(this);
       stmList = stmList.tail;
-      /*
-      if (head.getClass() == CallStm.class) {
-        ((CallStm) head).accept(this);
 
-      } else if (head.getClass() == WhileStm.class) {
-        ((WhileStm) head).accept(this);
-
-      } else if (head.getClass() == IfStm.class) {
-        ((IfStm) head).accept(this);
-
-      } else if (head.getClass() == CompStm.class) {
-        ((CompStm) head).accept(this);
-      }*/
     }
   }
 
   public void visit(AssignStm assignStm) {
+    if (freeReg + 1 > R_MAX) {
+      throw new RuntimeException("Ausdruck zu kompliziert");
+    }
+    assignStm.var.accept(this);   //freeReg -1
+    freeReg++;
+    assignStm.exp.accept(this);  //freeReg
+
+
+    outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");  //ldw fraglich
+    outWriter.format("\tstw\t$" + freeReg + ",$" + (freeReg - 1) + "," + 0 + "\n");
+
+    freeReg--;
 
   }
 
   public void visit(CallStm callStm) {
 
+    this.visit(callStm.args, callStm.name);
+    outWriter.format("\tjal\t" + callStm.name.toString() + "\n");
+  }
+
+  public void visit(ExpList expList, sym.Sym procName) {
+    Exp head;
+    ProcEntry entry = (ProcEntry) globalTable.lookup(procName);
+    ParamTypeList paramHead = entry.paramTypes;
+    int n = 0;
+
+    while (!expList.isEmpty) {
+      head = expList.head;
+      head.accept(this);
+
+      if (paramHead.isRef) {
+        outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + "\n");
+      }
+
+      outWriter.format("\tstw\t$" + freeReg + ",$" + R_SP + "," + (n * Varalloc.intByteSize) + "\n");
+
+      paramHead = paramHead.next;
+      expList = expList.tail;
+      n++;
+    }
+
   }
 
   public void visit(CompStm compStm) {
-
+    compStm.stms.accept(this);
   }
 
+  private int newLabel() {
+    int numLabels = 0;
+    return numLabels++;
+  }
 
-  public void visit(ExpList expList) {
+  public void visit(WhileStm whileStm) {
+    int label = newLabel();
+    elseLabel = newLabel();
 
+    outWriter.format("\tL" + label + ":\n");
+    whileStm.test.accept(this);
+    whileStm.body.accept(this);
+    outWriter.format("\tj\tL" + label + "\n");
+    outWriter.format("\tL" + elseLabel + ":\n");
   }
 
   public void visit(IfStm ifStm) {
+
+    int endLabel = 0, elseLabel_old = elseLabel;
+    boolean hasElse = true;
+    if (ifStm.elsePart.getClass() == EmptyStm.class) hasElse = false;
+
+    elseLabel = newLabel();  //1
+    if (hasElse) {
+      endLabel = newLabel();  //2
+    }
+
+    ifStm.test.accept(this);
+    ifStm.thenPart.accept(this);
+
+    if (hasElse) {
+      outWriter.format("\tj\tL" + endLabel + "\n");  //jump to 2
+    }
+
+    outWriter.format("\tL" + elseLabel + ":\n");  //1
+    if (hasElse) {
+      ifStm.elsePart.accept(this);
+      outWriter.format("\tL" + endLabel + ":\n");  //2
+    }
+
+    elseLabel = elseLabel_old; //elseLabel = 0
 
   }
 
   public void visit(OpExp opExp) {
 
-    opExp.left.accept(this);
-    freeReg++;
-    if (freeReg > R_MAX) {
+    if (freeReg + 1 > R_MAX) {
       throw new RuntimeException("Ausdruck zu kompliziert");
     }
+    opExp.left.accept(this);
+    freeReg++;
     opExp.right.accept(this);
 
     //switch case operation
+    switch (opExp.op) {
+      case OpExp.ADD:
+        outWriter.format("\tadd\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",$" + freeReg + "\n");
+        break;
+      case OpExp.SUB:
+        outWriter.format("\tsub\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",$" + freeReg + "\n");
+        break;
+      case OpExp.MUL:
+        outWriter.format("\tmul\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",$" + freeReg + "\n");
+        break;
+      case OpExp.DIV:
+        outWriter.format("\tdiv\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",$" + freeReg + "\n");
+        break;
 
-    //freeReg--
+      case OpExp.EQU:
+        outWriter.format("\tbne\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",L" + elseLabel + "\n");
+        break;
+      case OpExp.NEQ:
+        outWriter.format("\tbeq\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",L" + elseLabel + "\n");
+        break;
+      case OpExp.LST:
+        outWriter.format("\tbge\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",L" + elseLabel + "\n");
+        break;
+      case OpExp.LSE:
+        outWriter.format("\tbgt\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",L" + elseLabel + "\n");
+        break;
+      case OpExp.GRT:
+        outWriter.format("\tble\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",L" + elseLabel + "\n");
+        break;
+      case OpExp.GRE:
+        outWriter.format("\tblt\t$" + (freeReg - 1) + ",$" + (freeReg - 1) + ",L" + elseLabel + "\n");
+        break;
 
+    }
+
+    freeReg--;
 
   }
 
@@ -167,41 +261,36 @@ public class Codegen implements visitor.Visitor {
   }
 
   public void visit(VarExp varExp) {
-    varExp.accept(this);
+    varExp.var.accept(this);
   }
 
   public void visit(SimpleVar simpleVar) {
-    VarEntry entry = (VarEntry) globalTable.lookup(simpleVar.name);
+    VarEntry entry = (VarEntry) localTable.lookup(simpleVar.name);
     outWriter.format("\tadd\t$" + freeReg + ",$" + R_FP + "," + entry.offset + "\t\t; SimpleVar " + simpleVar.name.toString() + " \n");
-    outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + " \n");
-
+    //TODO: minus vom sp aus und ld rr0
   }
 
   public void visit(ArrayVar arrayVar) {
 
-    if (freeReg + 1 > R_MAX) throw new RuntimeException("Ausdruck zu kompliziert");
+    //8
+    if (freeReg + 2 > R_MAX) throw new RuntimeException("Ausdruck zu kompliziert");
 
-    //arrayVar.var.accept(this); //freereg = 8
+    arrayVar.var.accept(this); //freereg = 8
     freeReg++;
-    arrayVar.index.accept(this);  // free 8
-
+    arrayVar.index.accept(this);  // free 9
+    freeReg++;
+    //free 10
     SimpleVar var = (SimpleVar)arrayVar.var;
-    VarEntry entry = (VarEntry)globalTable.lookup(var.name);
+    VarEntry entry = (VarEntry) localTable.lookup(var.name);
     ArrayType aType = (ArrayType)entry.type;
-    //9
 
-    basetypesize = node->type_t->size;
-    actualarraysize = node->u.arrayVar.var->type_t->u.arrayType.size;
 
-    outWriter.format("\tadd\t$" + freeReg + ",$" + 0 + "," +aType.size + "\n" );
+    outWriter.format("\tadd\t$" + freeReg + ",$" + 0 + "," + aType.size + "\n");
     outWriter.format("\tbgeu\t$" + (freeReg - 1) + ",$" + freeReg + ",_indexError\n");
     outWriter.format("\tmul\t$" + (freeReg - 1) + ",$" + (freeReg -1) + ",$" + aType.baseType.getByteSize() + " \n" );
-    outWriter.format("\tadd\t$%d,$%d,$%d\n", r, r, r+1);
+    outWriter.format("\tadd\t$" + (freeReg - 2) + ",$" + (freeReg - 2) + ",$" + (freeReg - 1) + "\n");
 
-  }
-
-  public void visit(WhileStm whileStm) {
-
+    freeReg = freeReg - 2;
   }
 
 
@@ -219,6 +308,10 @@ public class Codegen implements visitor.Visitor {
   }
 
   public void visit(EmptyStm emptyStm) {
+  }
+
+  public void visit(ExpList expList) {
+
   }
 
   public void visit(VarDec varDec) {
