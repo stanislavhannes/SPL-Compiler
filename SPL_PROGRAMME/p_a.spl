@@ -1,0 +1,27 @@
+//
+//Programm a)
+//Im Hauptprogramm: Eingabe von zwei Zahlen, Ausgabe der Summe.
+//
+proc main(){
+var e1: int;
+//allocate frame 16 = 4 var + 4 oldfp + 4 retreg + 4 out area size 
+e1 := 2;
+
+test(e1);
+
+
+
+
+//printc(49);
+//readi(e1);
+
+//printc(50);
+//readi(e2);
+
+//printi(e1 + e2);
+
+}
+
+proc test(i:int){
+i := 1;
+}

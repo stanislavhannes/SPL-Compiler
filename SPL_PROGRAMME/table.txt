@@ -1,0 +1,8 @@
+type A = array [5] of int;
+proc main() {
+var a : int;
+
+  var b : int;
+  
+  a := a + b;
+}

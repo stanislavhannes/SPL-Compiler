@@ -1,0 +1,9 @@
+proc main() {
+var a : int;
+  var b : int;
+  a := a + b;
+  bla();
+}
+
+proc bla(){
+}

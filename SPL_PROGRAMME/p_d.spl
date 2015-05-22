@@ -1,0 +1,55 @@
+//
+//d) Berechnung von n! in einer Prozedur, sowohl iterativ als auch rekursiv.
+//
+
+proc main(){
+	var n: int;
+	var faku: int;
+
+	printc('gib n ein: ');
+		readi(n);
+   	
+	printc(n);
+	printc('! iterativ: ');
+	itFak(n,faku)
+	printc(faku);
+	
+	printc(n);
+	printc('! rekursiv: ');
+	rekFak(n,faku)
+	printc(faku);
+
+	
+	
+
+}
+
+proc itFak(n:int, ref faku:int){
+	var i :int;
+	var temp :int;
+
+	faku := 1;
+	i := 0;
+
+	
+	while (i <= n){
+		faku := faku * i;
+		i := i + 1;		
+	}
+
+}
+
+proc rekFak(n:int, ref faku:int){
+
+	var temp: int;
+	if(n >= 1)
+        {
+		temp := rekFak(n-1,faku)
+		n := temp*n;
+        }
+        else
+        {
+              n := 1;
+        }
+}
+

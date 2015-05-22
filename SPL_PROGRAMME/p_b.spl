@@ -1,0 +1,25 @@
+//
+//Programm b)
+//Dasselbe, aber mit Berechnung der Summe in einer Prozedur.
+//
+
+proc main(){
+	var e1: int;
+	var e2: int;
+	var res: int;
+
+	printc(49);
+	readi(e1);
+
+	printc(50);
+	readi(e2);
+
+	sum(res, e1, e2);
+	printi(res);
+
+}
+
+proc sum(ref res:int, ref e1:int, ref e2:int){
+	res := e1+e2;
+}
+

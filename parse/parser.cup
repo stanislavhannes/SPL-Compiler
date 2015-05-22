@@ -44,7 +44,7 @@ non terminal 	StmList statement_list;
 non terminal	Stm statement;
 non terminal 	Exp expr_ext, expr_comp, expr, term, faktor;
 non terminal	ExpList arg_list;
-non terminal	Var left_hand, array; 
+non terminal	Var left_hand, array;
 
 		
 
@@ -151,8 +151,8 @@ faktor			::= LPAREN expr:e RPAREN
 			| INTLIT:i
 			  {: RESULT = new IntExp(ileft, iright, i); :}
 			| left_hand:lhs
-			  {: RESULT = new VarExp(lhsleft, lhsright, lhs); :}	
-			| MINUS:m faktor:f
+			  {: RESULT = new VarExp(lhsleft, lhsright, lhs); :}
+			| MINUS:m faktor:f /*TODO: expt, term faktor und diese Zeile überarbeiten*/
 			  {: RESULT = new OpExp(mleft, mright, OpExp.MUL, new IntExp(fleft,fright, -1), f); :};
 			
 expr_ext		::= expr_comp:ec

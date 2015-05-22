@@ -1,0 +1,441 @@
+
+SPL Sprachdefinition
+====================
+
+1. Allgemeines
+--------------
+
+SPL ("Simple Programming Language") ist eine einfache prozedurale
+Programmiersprache. Sie enthaelt einen vordefinierten primitiven
+Typ fuer ganze Zahlen sowie einen Typkonstruktor fuer Felder.
+SPL benutzt ausserdem Wahrheitswerte; es lassen sich aber weder
+Variable von diesem Typ anlegen noch gibt es Literale dieses Typs.
+
+SPL kennt Prozeduren (aber keine Funktionen), sowohl mit Wert- als
+auch mit Referenzparametern. Werte zusammengesetzter Typen muessen
+als Referenzparameter uebergeben werden. Prozeduren koennen lokale
+Variable vereinbaren. Globale Variable gibt es nicht, ebensowenig
+wie ineinander geschachtelte Prozedurvereinbarungen.
+
+Als Anweisungen stehen die bedingte Anweisung (ein- und zweiarmig),
+die abweisende Schleife, die Zuweisung, der Aufruf einer Prozedur
+sowie die zusammengesetzte Anweisung fuer Anweisungsfolgen zur
+Verfuegung.
+
+Ausdruecke werden ueber ganzen Zahlen konstruiert. Es stehen sechs
+Vergeichsoperatoren, die vier Grundrechenarten und die Negation zur
+Verfuegung. Klammern erlauben die beliebige Zusammenfassung von
+Teilausdruecken. Fuer den vordefinierten Typ "ganze Zahl" koennen
+Literale in verschiedenen Darstellungen notiert werden.
+
+Felder werden durch ganzzahlige Ausdruecke indiziert, sowohl auf
+der linken wie auf der rechten Seite von Zuweisungen bzw. in
+Argumentausdruecken. Zulaessige Indexausdruecke liefern einen
+Wert im Bereich 0..(n-1), wenn das Feld n Elemente hat. Die
+Indizierung eines Feldes ausserhalb dieses Bereichs ruft einen
+Laufzeitfehler hervor.
+
+Die Laufzeitbibliothek bietet Prozeduren zur Eingabe und Ausgabe
+ganzer Zahlen sowie einzelner Zeichen auf dem Textbildschirm an.
+Sie stellt auch eine Prozedur zum sofortigen Beenden eines Programms
+zur Verfuegung. Eine weitere Prozedur gibt die seit dem Start des
+Programms vergangene Zeit zurueck. Auf dem Graphikbildschirm koennen
+einzelne Pixel, gerade Linien oder Kreise in beliebigen Farben
+gezeichnet werden. Es ist auch moeglich, den ganzen Grafikbildschirm
+mit einer beliebigen Farbe zu fuellen.
+
+Am Ende dieser Sprachdefinition befindet sich ein Beispielprogramm,
+in dem einige der Moeglichkeiten von SPL demonstriert werden.
+
+
+2. Lexikalische Konventionen
+----------------------------
+
+Gross- und Kleinschreibung wird unterschieden.
+
+Leerzeichen und horizontale Tabulatoren trennen Token, haben
+aber sonst keine Bedeutung fuer das Programm. Zeilenumbrueche
+zaehlen ebenfalls als Leerzeichen.
+
+Ein Kommentar wird durch einen doppelten Schraegstrich ("//")
+eingeleitet und reicht bis zum Ende der Zeile, in der er steht.
+Auch er trennt Token und hat fuer das Programm keine Bedeutung.
+
+Beispiel:
+  // Das ist ein Kommentar.
+
+Bezeichner bestehen aus beliebig vielen Buchstaben, Ziffern und
+Unterstrichen. Sie muessen mit einem Buchstaben beginnen, wobei
+der Unterstrich als Buchstabe betrachtet wird.
+
+Beispiel:
+  das_ist_ein_Bezeichner
+
+Zahlen werden durch Aneinanderreihung von Dezimalziffern gebildet.
+Alternativ koennen Zahlen im Hexadezimalsystem angegeben werden.
+Sie beginnen mit dem Praefix "0x" und enthalten Hexadezimalziffern
+(0-9,a-f). Die Hexadezimalziffern a-f koennen auch gross geschrieben
+werden. Eine dritte Alternative fuer die Darstellung von Zahlen ergibt
+sich durch den Einschluss genau eines Zeichens in Apostrophe. Die
+dargestellte Zahl ist dann der ASCII-Code des Zeichens zwischen den
+Apostrophen. Die Zeichenfolge \n gilt dabei als ein Zeichen mit der
+Bedeutung "Zeilenumbruch" (0x0a). Zahlen muessen im Bereich 0..2^31-1
+liegen; zur Darstellung von negative Zahlen steht der unaere Operator
+"-" zur Verfuegung (siehe unten). Die Interpretation von Zahlen, die
+aus dem angegebenen Bereich herausfallen, ist undefiniert.
+
+Beispiele:
+  1234
+  0x1a2f3F4e
+  'a'
+  '\n'
+
+SPL enthaelt die folgenden reservierten Woerter, die nicht als
+Bezeichner benutzt werden koennen:
+  array else if of proc ref type var while
+
+Die folgenden Zeichen und Zeichenkombinationen tragen Bedeutung:
+  (  )  [  ]  {  }  =  #  <  <=  >  >=  :=  :  ,  ;  +  -  *  /
+
+Alle nichtzulaessigen Zeichen oder Zeichenfolgen werden erkannt
+und zurueckgewiesen.
+
+
+3. Das Hauptprogramm
+--------------------
+
+Ein SPL-Programm besteht aus einer Sammlung von Typen- und Prozedur-
+vereinbarungen ohne bestimmte Reihenfolge. Bezeichner fuer Typen muessen
+vor ihrer Benutzung vereinbart werden. Bei Prozedurbezeichnern besteht
+diese Einschraenkung nicht, damit wechselseitig rekursive Prozeduren
+formuliert werden koennen.
+
+Mindestens eine Prozedurvereinbarung ist erforderlich, und zwar die
+der Prozedur mit dem festgelegten Namen "main". Diese Prozedur hat
+keine Parameter und wird beim Programmstart automatisch aktiviert.
+
+
+4. Typen und Typvereinbarungen
+------------------------------
+
+Es gibt einen vordefinierten primitiven Typ fuer ganze Zahlen ("int").
+Der Bezeichner "int" ist kein reserviertes Wort. Er gilt als implizit
+vor allen Benutzer-Deklarationen vereinbart.
+
+Der Datentyp-Konstruktor "array" konstruiert ein Feld ueber einem
+Basistyp. Die Feldgroesse wird statisch zum Uebersetzungszeitpunkt
+festgelegt und ist Bestandteil des Typs. Der Basistyp kann irgendein
+beliebiger Typ sein.
+
+Beispiele:
+  array [3] of int
+  array [3] of array [5] of int
+
+Eine Typvereinbarung verbindet einen Bezeichner mit einem Typ. Sie
+hat die folgende Struktur:
+  type <name> = <typ> ;
+Danach kann <name> als Abkuerzung fuer <typ> benutzt werden.
+
+Beispiele:
+  type myInt = int;
+  type vector = array [5] of int;
+  type matrix = array [3] of vector;
+  type mat3 = array [10] of array [20] of vector;
+
+Jeder Typausdruck konstruiert einen neuen Typ. Zwei Typen sind gleich,
+wenn sie durch denselben Typausdruck konstruiert wurden.
+
+Beispiel fuer gleiche Typen:
+  type typ1 = array [5] of int;
+  type typ2 = typ1;
+
+Beispiel fuer verschiedene Typen:
+  type typ1 = array [5] of int;
+  type typ2 = array [5] of int;
+
+
+5. Prozedurvereinbarungen
+-------------------------
+
+Eine Prozedurvereinbarung verbindet einen Bezeichner mit einer Prozedur.
+Sie hat folgende Form:
+  proc <name> ( <parameterliste> ) { <deklarationen> <anweisungsliste> }
+
+Die optionale <parameterliste> nennt die formalen Parameter der Prodedur.
+Jeder Parameter wird in einer von zwei Formen angegeben:
+  <name> : <typ>
+oder
+  ref <name> : <typ>
+Die erste Form bezeichnet einen Wertparameter, die zweite Form einen
+Referenzparameter. Die einzelnen Parameter werden in der Liste durch
+Kommata getrennt. Die Namen der Parameter haben Gueltigkeit bis zum
+Ende der Prozedur.
+
+Die optionalen <deklarationen> vereinbaren lokale Variable. Jede
+Deklaration hat die folgende Form:
+  var <name> : <typ> ;
+Diese Namen haben ebenfalls bis zum Ende der Prozedur Gueltigkeit.
+Sie duerfen nicht mit einem Parameternamen kollidieren.
+
+Es ist moeglich, Parameter oder lokale Variable mit einem Namen zu
+vereinbaren, der weiter ausserhalb schon eine andere Bedeutung besitzt,
+d.h. ein Typ- oder Prozedurname ist. Diese aeussere Bedeutung wird
+durch die lokale Bedeutung verdeckt.
+
+Die optionale <anweisungsliste> besteht aus beliebig vielen Anweisungen.
+
+Beispiele:
+  proc nothing() {}
+  proc copy(i: int, ref j: int) { j := i; }
+  proc swap(ref i: int, ref j: int) {
+    var k: int;
+    k := i; i := j; j := k;
+  }
+
+
+6. Anweisungen
+--------------
+
+Anweisungen dienen zum Erreichen eines Effektes (Aendern des Zustands,
+Seiteneffekt). Es gibt sechs verschiedene Anweisungen.
+
+Die leere Anweisung besteht nur aus einem Semikolon und bewirkt nichts.
+
+Die Zuweisung hat die Form:
+  <lhs> := <rhs> ;
+Dabei muss <lhs> eine Variable sein (auch indizierte Feldvariablen sind
+erlaubt) und <rhs> ein Ausdruck von gleichem Typ wie die Variable.
+Zur Laufzeit wird die rechte Seite ausgewertet und der linken Seite
+zugewiesen. Alle eventuell auf der linken Seite stehenden Ausdruecke
+werden vor allen auf der rechten Seite stehenden Ausdruecken ausgewertet.
+
+Beispiel:
+  x[3] := x[2] * 2;
+
+Die bedingte Anweisung kann in einer von zwei Formen vorliegen:
+  if ( <ausdruck> ) <anweisung1>
+  if ( <ausdruck> ) <anweisung1> else <anweisung2>
+Dabei ist <ausdruck> ein Ausdruck, der einen Wahrheitswert liefert
+und <anweisung1> bzw. <anweisung2> jeweils eine Anweisung. Die hinter
+einem "else" stehende Anweisung gehoert zum innersten "if", dem noch
+kein "else" zugeordnet ist. Zur Laufzeit wird <ausdruck> ausgewertet.
+Liefert er "wahr", dann wird die <anweisung1> ausgefuehrt. Liefert
+er "falsch", dann wird in der ersten Form nichts weiter getan; in der
+zweiten Form wird in diesem Fall <anweisung2> ausgefuehrt. In jedem
+Fall wird die Ausfuehrung mit der auf die "if"-Anweisung folgenden
+Anweisung fortgefuehrt.
+
+Beispiele:
+  if (x < 0) x := 42;
+  if (x < 0) x := 42; else x := 43;
+
+Die abweisende Schleife wird wie folgt formuliert:
+  while ( <ausdruck> ) <anweisung>
+Dabei ist <ausdruck> ein Ausdruck, der einen Wahrheitswert liefert
+und <anweisung> eine Anweisung. Zur Laufzeit wird <ausdruck> ausgewertet.
+Liefert er "wahr", dann wird die <anweisung> ausgefuehrt und die Schleife
+aufs neue durchlaufen. Liefert er "falsch", wird mit der auf die "while"-
+Anweisung folgenden Anweisung fortgefahren.
+
+Beispiel:
+  while (x < 10) x := x + 1;
+
+Um eine Anweisungfolge syntaktisch als eine einzige Anweisung erscheinen
+zu lassen, gibt es die zusammengesetzte Anweisung. Sie besteht aus
+beliebig vielen Anweisungen (moeglicherweise auch keiner einzigen), die
+in geschweifte Klammern gesetzt sind.
+
+Beispiel:
+  { k := i; i := j; j := k; }
+
+Ein Prozeduraufruf wird durch folgende Form erreicht:
+  <name> ( <argumentliste> ) ;
+Die optionale <argumentliste> ist eine durch Kommata getrennte Liste
+von Ausdruecken, deren Anzahl und Typen mit der Anzahl der Parameter
+und deren Typen in der Vereinbarung der Prozedur uebereinstimmen muss.
+Zur Laufzeit werden die Argumentausdruecke von links nach rechts
+ausgewertet und dann die Prozedur aktiviert. Fuer Referenzparameter
+koennen nur Variable (einfache Variable oder Feldvariable) in der
+Argumentliste stehen, waehrend fuer Wertparameter beliebige Ausdruecke
+zulaessig sind. Nach Abarbeitung der Prozedur kehrt die Ausfuehrung
+hinter den Prozeduraufruf zurueck.
+
+Beispiel:
+  swap(n, m);
+  sum(3 * x + 5, 9 - y / 2, z);
+
+
+7. Ausdruecke
+-------------
+
+Ausdruecke dienen zur Berechnung von Werten. Die Werte sind entweder
+ganzzahlig oder Wahrheitswerte.
+
+Zur Berechnung von ganzzahl<igen Werten stehen die vier Grundrechenarten
+mit den ueblichen Vorraengen und Assoziativitaeten zur Verfuegung.
+Ebenfalls verfuegbar ist das unaere Minus; es bindet staerker als die
+Multiplikation.
+
+Die sechs Vergleichsoperatoren sind <, <=, >, >=, = und # (ungleich).
+Sie vergleichen die Werte von zwei ganzzahligen Ausdruecken und liefern
+einen Wahrheitswert. Sie binden schwaecher als die Addition. Es stehen
+keine Operatoren zur Kombination von Wahrheitswerten zur Verfuegung.
+
+An jeder Stelle eines Ausdrucks koennen runde Klammern benutzt werden,
+um die eingebauten Vorraenge und Assoziativitaeten ausser Kraft zu
+setzen.
+
+Die Operanden eines Ausdrucks sind andere Ausdruecke, und letzendlich
+Literale oder Variable. Letztere sind entweder einfache Variable oder
+indizierte Feldvariable. Die Indizierung eines Feldes geschieht durch
+einen Ausdruck mit ganzzahligem Wert in eckigen Klammern hinter der
+Feldvariablen. Operationen mit einem Feld als ganzem sind nicht erlaubt
+(ausser der Uebergabe des ganzen Feldes als Referenz).
+
+Zur Laufzeit werden bei allen Ausdruecken mit zwei Operanden zuerst
+der linke und dann der rechte Operand ausgewertet; danach wird die
+Operation ausgefuehrt.
+
+Beispiele:
+  1
+  x
+  3 + x * y
+  (3 + x) * y
+  5 * -a[n-2]
+  i < n
+  b - 2 # a + 3
+
+
+8. Bibliotheksprozeduren
+------------------------
+
+printi(i: int)
+Gibt den Wert von i auf dem Textbildschirm aus.
+
+printc(i: int)
+Gibt das Zeichen mit dem ASCII-Code i auf dem Textbildschirm aus.
+
+readi(ref i: int)
+Liest eine ganze Zahl von der Tastatur ein und speichert sie in i.
+Die Eingabe erfolgt zeilenweise gepuffert mit Echo.
+
+readc(ref i: int)
+Liest ein Zeichen von der Tastatur ein und speichert seinen ASCII-Code
+in i. Die Eingabe erfolgt ungepuffert und ohne Echo.
+
+exit()
+Beendet das laufende Programm und kehrt nicht zum Aufrufer zurueck.
+
+time(ref i: int)
+Gibt in i die seit dem Start des Programms vergangene Zeit in Sekunden
+zurueck.
+
+clearAll(color: int)
+Loescht den Graphikbildschirm mit der Farbe color. Farben werden durch
+Angabe der R-, G- und B-Komponenten nach dem Muster 0x00RRGGBB gebildet.
+Es stehen also fuer jede Komponente die Werte 0..255 zur Verfuegung.
+
+setPixel(x: int, y: int, color: int)
+Setzt den Pixel mit den Koordinaten x und y auf die Farbe color.
+Grenzen: 0 <= x < 640, 0 <= y < 480.
+
+drawLine(x1: int, y1: int, x2: int, y2: int, color: int)
+Zeichnet eine gerade Linie von (x1|y1) nach (x2|y2) mit der Farbe color.
+Grenzen wie bei setPixel.
+
+drawCircle(x0: int, y0: int, radius: int, color: int)
+Zeichnet einen Kreis um den Mittelpunkt (x0|y0) mit dem Radius radius
+und der Farbe color.
+
+
+9. Programmbeispiel
+-------------------
+
+Das folgende kleine SPL-Programm berechnet Loesungen zum
+wohlbekannten "Acht-Damen-Problem".
+
+//
+// queens.spl -- the 8-queens problem
+//
+
+
+type A8 = array [8] of int;
+type A15 = array [15] of int;
+
+
+proc main() {
+  var row: A8;
+  var col: A8;
+  var diag1: A15;
+  var diag2: A15;
+  var i: int;
+
+  i := 0;
+  while (i < 8) {
+    row[i] := 0;
+    col[i] := 0;
+    i := i + 1;
+  }
+  i := 0;
+  while (i < 15) {
+    diag1[i] := 0;
+    diag2[i] := 0;
+    i := i + 1;
+  }
+  try(0, row, col, diag1, diag2);
+}
+
+
+proc try(c: int, ref row: A8, ref col: A8, ref diag1: A15, ref diag2: A15) {
+  var r: int;
+
+  if (c = 8) {
+    printboard(col);
+  } else {
+    r := 0;
+    while (r < 8) {
+      if (row[r] = 0) {
+        if (diag1[r + c] = 0) {
+          if (diag2[r + 7 - c] = 0) {
+            // update
+            row[r] := 1;
+            diag1[r + c] := 1;
+            diag2[r + 7 - c] := 1;
+            col[c] := r;
+            // try
+            try(c + 1, row, col, diag1, diag2);
+            // downdate
+            row[r] := 0;
+            diag1[r + c] := 0;
+            diag2[r + 7 - c] := 0;
+          }
+        }
+      }
+      r := r + 1;
+    }
+  }
+}
+
+
+proc printboard(ref col: A8) {
+  var i: int;
+  var j: int;
+
+  i := 0;
+  while (i < 8) {
+    j := 0;
+    while (j < 8) {
+      printc(' ');
+      if (col[i] = j) {
+        printc('0');
+      } else {
+        printc('.');
+      }
+      j := j + 1;
+    }
+    printc('\n');
+    i := i + 1;
+  }
+  printc('\n');
+}
+
