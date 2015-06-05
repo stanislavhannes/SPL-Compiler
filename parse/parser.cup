@@ -152,8 +152,8 @@ faktor			::= LPAREN expr:e RPAREN
 			  {: RESULT = new IntExp(ileft, iright, i); :}
 			| left_hand:lhs
 			  {: RESULT = new VarExp(lhsleft, lhsright, lhs); :}
-			| MINUS:m faktor:f /*TODO: expt, term faktor und diese Zeile überarbeiten*/
-			  {: RESULT = new OpExp(mleft, mright, OpExp.MUL, new IntExp(fleft,fright, -1), f); :};
+			| MINUS:m faktor:f
+			  {: RESULT = new OpExp(mleft, mright, OpExp.SUB, new IntExp(fleft,fright, 0), f); :};
 			
 expr_ext		::= expr_comp:ec
 			  {: RESULT = ec; :}
