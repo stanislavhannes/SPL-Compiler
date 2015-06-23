@@ -5,9 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 public class IfStm extends Stm implements VisitorElement {
 
     public Exp test;

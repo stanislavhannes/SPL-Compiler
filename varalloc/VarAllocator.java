@@ -14,11 +14,11 @@ import table.VarEntry;
 import types.ParamTypeList;
 import visitor.Visitor;
 
-public class Varalloc implements Visitor {
+public class VarAllocator implements Visitor {
 
-    public static final int intByteSize = 4;
-    public static final int boolByteSize = 4;
-    public static final int refByteSize = 4;
+    public static final int INTBYTESIZE = 4;
+    public static final int BOOLBYTESIZE = 4;
+    public static final int REFBYTESIZE = 4;
 
     private Table globalTable;
     private boolean showVarAlloc;
@@ -26,7 +26,7 @@ public class Varalloc implements Visitor {
     private ProcEntry procEntry = null;
     private boolean firstCompute = true;
 
-    public Varalloc(Table t, boolean s) {
+    public VarAllocator(Table t, boolean s) {
         globalTable = t;
         showVarAlloc = s;
     }
@@ -69,7 +69,7 @@ public class Varalloc implements Visitor {
 
         while (!param.isEmpty) {
             param.offset = size;
-            size += param.isRef ? refByteSize : param.type.getByteSize();
+            size += param.isRef ? REFBYTESIZE : param.type.getByteSize();
             param = param.next;
         }
         entry.argAreaSize = size;  //size of argument area

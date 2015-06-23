@@ -5,17 +5,16 @@
 
 package table;
 
-import types.ParamTypeList;
+import types.*;
 
 
 public class ProcEntry extends Entry {
 
   public ParamTypeList paramTypes;
   public Table localTable;
-  public int argAreaSize;   //size of argument area
-  public boolean stmCall = false;
-  public int varAreaSize;   // size of localvar area
-  public int outAreaSize = -1;   // size of outgoing area
+  public int argumentAreaSize;	/* filled in by variable allocator */
+  public int localvarAreaSize;	/* filled in by variable allocator */
+  public int outgoingAreaSize;	/* filled in by variable allocator */
 
   public ProcEntry(ParamTypeList p, Table t) {
     paramTypes = p;

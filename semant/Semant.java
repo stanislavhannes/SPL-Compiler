@@ -12,13 +12,14 @@ import types.ArrayType;
 import types.ParamTypeList;
 import types.PrimitiveType;
 import types.Type;
-import varalloc.Varalloc;
+import varalloc.VarAllocator;
+import visitor.Visitor;
 
 
 //TODO:Reihenfolge der Fehlerausgabe beachten
 //TODO:Diese Klasse mit dem Visitor Patter umsetzen
 
-public class Semant {
+public class Semant implements Visitor{
 
     PrimitiveType builtinType_int, builtinType_bool;
     private boolean showTables;
@@ -445,14 +446,14 @@ public class Semant {
         while (!programDecList.isEmpty) {  //while (program) DecList is not empty (empty == false)
             node = programDecList.head;
 
-            if (node.getClass().getName().equals("absyn.ProcDec")) {
+            if (node instanceof ProcDec) {
 
-                //create a ParamTypeList
+                //create a ParamTypeList for the params of the Procedure
                 nodeProcDec = ((ProcDec) node).params;  //DecList params -> head=ParDec
                 paramsTypeList = null;
-                if (nodeProcDec.isEmpty) {
+                if (nodeProcDec.isEmpty) { // wenn keine parameter vorhanden
                     paramsTypeList = new ParamTypeList();
-                } else {
+                } else {  //ansonsten erstelle die ParamTypeList
                     while (!nodeProcDec.isEmpty) {
 
                         newParam = new ParamTypeList(checkNode(nodeProcDec.head, globalTable),
@@ -512,8 +513,8 @@ public class Semant {
         Entry entry;
 
     /* generate built-in types */
-        builtinType_int = new PrimitiveType("int", Varalloc.intByteSize);
-        builtinType_bool = new PrimitiveType("bool", Varalloc.boolByteSize);
+        builtinType_int = new PrimitiveType("int", VarAllocator.INTBYTESIZE);
+        builtinType_bool = new PrimitiveType("bool", VarAllocator.BOOLBYTESIZE);
         ParamTypeList oneIntParam = new ParamTypeList(builtinType_int, false, new ParamTypeList());
         ParamTypeList oneRefIntParam = new ParamTypeList(builtinType_int, true, new ParamTypeList());
         ParamTypeList threeIntParam = new ParamTypeList(
@@ -591,4 +592,171 @@ public class Semant {
         return globalTable;
     }
 
+    @Override
+    public void visit(ArrayTy aarrayTy) {
+
+    }
+
+    @Override
+    public void visit(ArrayVar arrayVar) {
+
+    }
+
+    @Override
+    public void visit(AssignStm assignStm) {
+
+    }
+
+    @Override
+    public void visit(CallStm callStm) {
+
+    }
+
+    @Override
+    public void visit(CompStm compStm) {
+
+    }
+
+    @Override
+    public void visit(DecList decList) {
+
+    }
+
+    @Override
+    public void visit(EmptyStm emptyStm) {
+
+    }
+
+    @Override
+    public void visit(ExpList expList) {
+
+    }
+
+    @Override
+    public void visit(IfStm ifStm) {
+
+    }
+
+    @Override
+    public void visit(IntExp intExp) {
+
+    }
+
+    @Override
+    public void visit(NameTy nameTy) {
+
+    }
+
+    @Override
+    public void visit(OpExp opExp) {
+
+    }
+
+    @Override
+    public void visit(ParDec parDec) {
+
+    }
+
+    @Override
+    public void visit(ProcDec procDec) {
+        Absyn node;
+        DecList programDecList = program;
+        DecList nodeProcDec;
+        Entry entry;
+        Sym name;
+        Table localTable;
+        ParamTypeList paramsTypeList, newParam, prevParam = null;
+
+        node = programDecList.head;
+
+        if (node instanceof ProcDec) {
+
+            //create a ParamTypeList for the params of the Procedure
+            nodeProcDec = ((ProcDec) node).params;  //DecList params -> head=ParDec
+            paramsTypeList = null;
+            if (nodeProcDec.isEmpty) { // wenn keine parameter vorhanden
+                paramsTypeList = new ParamTypeList();
+            } else {
+                while (!nodeProcDec.isEmpty) {
+
+                    newParam = new ParamTypeList(checkNode(nodeProcDec.head, globalTable),
+                            ((ParDec) nodeProcDec.head).isRef, null);
+                    if (paramsTypeList == null) {
+                        paramsTypeList = newParam;
+                    } else {
+                        prevParam.next = newParam;
+                    }
+                    prevParam = newParam;
+                    nodeProcDec = nodeProcDec.tail;
+                }
+                prevParam.next = new ParamTypeList();
+            }
+
+            localTable = new Table(globalTable);
+            entry = new ProcEntry(paramsTypeList, localTable);
+
+            // check redeclaration of proc and enter into globalTable
+            if (globalTable.enter(((ProcDec) node).name, entry) == null) {
+                throw new RuntimeException(
+                        "redeclaration of '" + ((ProcDec) node).name
+                                + "' as procedure in line " + ((ProcDec) node).row
+                );
+            }
+
+            // check redeclaration of params and enter into localTable
+            nodeProcDec = ((ProcDec) node).params;
+            while (!nodeProcDec.isEmpty) {
+
+                name = ((ParDec) nodeProcDec.head).name;
+                entry = new VarEntry(checkNode(((ParDec) nodeProcDec.head).ty, globalTable),
+                        ((ParDec) nodeProcDec.head).isRef);
+                if (localTable.enter(name, entry) == null) {
+                    throw new RuntimeException(
+                            "redeclaration of '" + name
+                                    + "' as parameter in line "
+                                    + ((ParDec) nodeProcDec.head).row
+                    );
+                }
+
+                nodeProcDec = nodeProcDec.tail;
+            }
+
+
+        } else if (node.getClass().getName().equals("absyn.TypeDec")) {
+            checkTypeDec(node, globalTable);
+        }
+
+        programDecList = programDecList.tail;
+
+    }
+
+    @Override
+    public void visit(SimpleVar simpleVar) {
+
+    }
+
+    @Override
+    public void visit(StmList stmList) {
+
+    }
+
+    @Override
+    public void visit(TypeDec typeDec) {
+
+    }
+
+    @Override
+    public void visit(VarDec varDec) {
+
+    }
+
+    @Override
+    public void visit(VarExp varExp) {
+
+    }
+
+    @Override
+    public void visit(WhileStm whileStm) {
+
+    }
 }

@@ -5,9 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 public class ArrayVar extends Var implements VisitorElement {
 
     public Var var;

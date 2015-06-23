@@ -5,9 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 public class DecList extends Absyn implements VisitorElement {
 
     public boolean isEmpty;

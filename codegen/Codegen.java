@@ -9,7 +9,7 @@ import java.io.*;
 import absyn.*;
 import table.*;
 import types.*;
-import varalloc.Varalloc;
+import varalloc.VarAllocator;
 
 
 //TODO: Produziert fehlerhaften AsseblerCode
@@ -74,16 +74,16 @@ public class Codegen implements visitor.Visitor {
 
     if (entry.stmCall) {
       frameSize = entry.varAreaSize +
-              +2 * Varalloc.refByteSize // Frampointer and Returnadress
+              +2 * VarAllocator.REFBYTESIZE // Frampointer and Returnadress
               + entry.outAreaSize;
-      oldFP = entry.outAreaSize + Varalloc.refByteSize;
+      oldFP = entry.outAreaSize + VarAllocator.REFBYTESIZE;
 
     } else {
-      frameSize = entry.varAreaSize + Varalloc.refByteSize;
+      frameSize = entry.varAreaSize + VarAllocator.REFBYTESIZE;
       oldFP = 0;
     }
 
-    oldRET = entry.varAreaSize + 2 * Varalloc.refByteSize;
+    oldRET = entry.varAreaSize + 2 * VarAllocator.REFBYTESIZE;
 
     outWriter.format("\n\t.export\t" + name + "\n");
     outWriter.format(name + ":\n");
@@ -150,7 +150,7 @@ public class Codegen implements visitor.Visitor {
         outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + "\n");
       }
 
-      outWriter.format("\tstw\t$" + freeReg + ",$" + R_SP + "," + (n * Varalloc.intByteSize) + "\n");
+      outWriter.format("\tstw\t$" + freeReg + ",$" + R_SP + "," + (n * VarAllocator.INTBYTESIZE) + "\n");
 
       paramHead = paramHead.next;
       expList = expList.tail;

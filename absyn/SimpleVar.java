@@ -5,10 +5,7 @@
 
 package absyn;
 
-import sym.Sym;
-import visitor.Visitor;
-import visitor.VisitorElement;
-
+import  sym.Sym;
 
 public class SimpleVar extends Var implements VisitorElement {
 

@@ -5,8 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
 
 public class VarExp extends Exp implements VisitorElement {
 

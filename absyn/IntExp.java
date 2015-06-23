@@ -5,9 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 public class IntExp extends Exp implements VisitorElement {
 
     public int val;

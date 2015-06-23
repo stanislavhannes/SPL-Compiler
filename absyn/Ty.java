@@ -5,8 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
 
 public abstract class Ty extends Absyn implements VisitorElement{
 

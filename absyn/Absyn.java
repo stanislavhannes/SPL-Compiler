@@ -5,7 +5,7 @@
 
 package absyn;
 
-public abstract class Absyn {
+public abstract class Absyn implements VisitorElement {
 
     public int row;
     public int col;

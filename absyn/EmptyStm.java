@@ -5,9 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 public class EmptyStm extends Stm implements VisitorElement {
 
     public EmptyStm(int r, int c) {

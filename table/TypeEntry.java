@@ -5,7 +5,7 @@
 
 package table;
 
-import types.Type;
+import types.*;
 
 
 public class TypeEntry extends Entry {

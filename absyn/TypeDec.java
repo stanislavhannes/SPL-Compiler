@@ -6,8 +6,6 @@
 package absyn;
 
 import sym.Sym;
-import visitor.Visitor;
-import visitor.VisitorElement;
 
 
 public class TypeDec extends Dec implements VisitorElement {

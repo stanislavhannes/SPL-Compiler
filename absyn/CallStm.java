@@ -6,8 +6,6 @@
 package absyn;
 
 import sym.Sym;
-import visitor.Visitor;
-import visitor.VisitorElement;
 
 
 public class CallStm extends Stm implements VisitorElement {

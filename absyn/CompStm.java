@@ -5,9 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 public class CompStm extends Stm implements VisitorElement {
 
     public StmList stms;

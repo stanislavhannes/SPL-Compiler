@@ -6,8 +6,7 @@
 package absyn;
 
 import sym.Sym;
-import visitor.Visitor;
-import visitor.VisitorElement;
+
 
 
 public class VarDec extends Dec implements VisitorElement {

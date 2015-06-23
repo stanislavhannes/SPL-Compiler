@@ -1,4 +1,4 @@
-package visitor;
+package absyn;
 
 /**
  * VisitorElement.java -- Interface for the visitor elements

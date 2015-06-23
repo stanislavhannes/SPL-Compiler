@@ -5,8 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
 
 public abstract class Stm extends Absyn implements VisitorElement{
 

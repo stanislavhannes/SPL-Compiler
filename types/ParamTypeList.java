@@ -2,43 +2,34 @@
  * ParamTypeList -- a list of parameter type representations
  */
 
-
 package types;
 
+import java.util.*;
 
-public class ParamTypeList {
+public class ParamTypeList extends ArrayList<ParamType> {
 
-  public boolean isEmpty;
-  public Type type;
-  public boolean isRef;
-  public ParamTypeList next;
-  public int offset;
+	/**
+	 * ParamTypeList is a list of ParamType Elements
+	 */
+	private static final long serialVersionUID = 1L;
 
-  public ParamTypeList() {
-    isEmpty = true;
-  }
+	public void add(Type type, boolean isRef) {
+		this.add(new ParamType(type, isRef));
+	}
 
-  public ParamTypeList(Type t, boolean r, ParamTypeList n) {
-    isEmpty = false;
-    type = t;
-    isRef = r;
-    next = n;
-  }
+	public void show() {
+		boolean printSeparator = false;
 
-  public void show() {
-    ParamTypeList list = this;
-    System.out.print("(");
-    while (!list.isEmpty) {
-      if (list.isRef) {
-        System.out.print("ref ");
-      }
-      list.type.show();
-      list = list.next;
-      if (!list.isEmpty) {
-        System.out.print(", ");
-      }
-    }
-    System.out.print(")");
-  }
+		System.out.print("(");
 
+		for (ParamType p : this) {
+			if (printSeparator)
+				System.out.print(", ");
+			else
+				printSeparator = true;
+			p.show();
+		}
+
+		System.out.print(")");
+	}
 }

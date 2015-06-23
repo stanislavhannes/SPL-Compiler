@@ -5,14 +5,14 @@
 
 package table;
 
-import types.Type;
+import types.*;
 
 
 public class VarEntry extends Entry {
 
   public Type type;
   public boolean isRef;
-  public int offset;
+  public int offset;		/* filled in by variable allocator */
 
   public VarEntry(Type t, boolean r) {
     type = t;

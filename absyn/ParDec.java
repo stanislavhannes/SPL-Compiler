@@ -6,9 +6,6 @@
 package absyn;
 
 import sym.Sym;
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 
 public class ParDec extends Dec implements VisitorElement {
 

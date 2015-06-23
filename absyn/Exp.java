@@ -6,9 +6,6 @@
 package absyn;
 
 
-import visitor.*;
-
-
 public abstract class Exp extends Absyn implements VisitorElement{
 
     public abstract void show(int n);

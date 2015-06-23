@@ -5,9 +5,6 @@
 
 package absyn;
 
-import visitor.Visitor;
-import visitor.VisitorElement;
-
 public class ArrayTy extends Ty implements VisitorElement {
 
     public int size;
