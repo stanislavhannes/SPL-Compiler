@@ -1,0 +1,2 @@
+#! /bin/sh
+java -cp ./lib/java-cup-11a-runtime.jar:. main.Main $@
