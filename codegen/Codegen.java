@@ -13,7 +13,7 @@ import varalloc.VarAllocator;
 
 
 //TODO: Produziert fehlerhaften AsseblerCode
-public class Codegen implements visitor.Visitor {
+public class Codegen extends DoNothingVisitor{
 
   private static final int R_MIN = 8;  // lowest free register
   private static final int R_MAX = 23; // highest free register

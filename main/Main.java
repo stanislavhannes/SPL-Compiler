@@ -113,7 +113,7 @@ class Main {
 			
 			try {
 				FileWriter outFile = new FileWriter(outFileName);
-				new Codegenerator(outFile).genCode(program, globalTable);
+				//TODO:new Codegenerator(outFile).genCode(program, globalTable);
 				outFile.close();
 			} catch (FileNotFoundException e) {
 				errmsg("**** Error: cannot open output file '" +

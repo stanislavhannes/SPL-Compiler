@@ -8,8 +8,11 @@ import absyn.*;
 class TableBuilder {
 
 	private boolean showTables;
+	private Table globalTable;
 
 	Table buildSymbolTables(Absyn program, boolean showTables) {
+		/**/
+		return null;
 	}
     
 	private class TableBuilderVisitor extends DoNothingVisitor {

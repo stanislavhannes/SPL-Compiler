@@ -24,12 +24,13 @@ public class SemanticChecker {
 	static final Type boolType = new PrimitiveType("boolean", VarAllocator.BOOLBYTESIZE);
 
 	public Table check(Absyn program, boolean showTables) {
-		Table globalTable = new Table;
+		Table globalTable = new Table();
 		new TableInitializer().intializeSymbolTable(globalTable);
 
 		/* do semantic checks in 2 passes */
 		new ProcedureBodyChecker().check(program, globalTable);
-		checkNode(program, globalTable);
+
+		//checkNode(program, globalTable);
 
 
 		 /* return global symbol table */
@@ -50,17 +51,15 @@ public class SemanticChecker {
 	private void checkMainProcedure(Table globalTable) {
 		Entry entry = globalTable.lookup(Sym.newSym("main"));
 
+
 		if (entry == null) {
 			throw new RuntimeException(
 					"procedure 'main' is missing"
 			);
 		}
 
-		if (!(entry instanceof ProcEntry)) {
-			throw new RuntimeException(
-					"'main' is not a procedure"
-			);
-		}
+		checkClass(entry,ProcEntry.class, "'main' is not a procedure");
+
 
 		if (!(((ProcEntry) entry).paramTypes.isEmpty())) {
 			throw new RuntimeException(

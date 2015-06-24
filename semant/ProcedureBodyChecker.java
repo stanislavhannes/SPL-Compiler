@@ -13,6 +13,7 @@ class ProcedureBodyChecker {
 	}
 
 	private class CheckVisitor extends DoNothingVisitor {
+
 		private Table globalTable;
 
 		public CheckVisitor(Table globalTable) {

@@ -12,9 +12,9 @@ import table.ProcEntry;
 import table.Table;
 import table.VarEntry;
 import types.ParamTypeList;
-import visitor.Visitor;
 
-public class VarAllocator implements Visitor {
+
+public class VarAllocator extends DoNothingVisitor {
 
     public static final int INTBYTESIZE = 4;
     public static final int BOOLBYTESIZE = 4;
@@ -67,31 +67,23 @@ public class VarAllocator implements Visitor {
         ParamTypeList param = entry.paramTypes;
         int size = 0;
 
-        while (!param.isEmpty) {
-            param.offset = size;
-            size += param.isRef ? REFBYTESIZE : param.type.getByteSize();
-            param = param.next;
+        while (!param.isEmpty()) {
+          //  param.offset = size;
+          //  size += param.isRef ? REFBYTESIZE : param.type.getByteSize();
+          //  param = param.next;
         }
-        entry.argAreaSize = size;  //size of argument area
+        entry.argumentAreaSize = size;  //size of argument area
     }
 
-    public void visit(ArrayTy arrayTy) {
-    }
-
-    public void visit(ArrayVar arrayVar) {
-    }
-
-    public void visit(AssignStm assignStm) {
-    }
 
     public void visit(CallStm callStm) {
 
         ProcEntry entry = (ProcEntry) globalTable.lookup(callStm.name);
-        int argAreaSize = entry.argAreaSize;
-        procEntry.stmCall = true;
+        int argAreaSize = entry.argumentAreaSize;
+       // procEntry.stmCall = true;
 
-        if (procEntry.outAreaSize < argAreaSize)
-            procEntry.outAreaSize = argAreaSize;
+        if (procEntry.outgoingAreaSize < argAreaSize)
+            procEntry.outgoingAreaSize = argAreaSize;
 
     }
 
@@ -115,18 +107,18 @@ public class VarAllocator implements Visitor {
                 procEntry = ((ProcEntry) globalTable.lookup(((ProcDec) node).name));
                 ((ProcDec) node).accept(this);
 
-                procEntry.varAreaSize = varOffset;
+                procEntry.localvarAreaSize = varOffset;
                 varOffset = 0;
 
                 if ((!firstCompute) && showVarAlloc) {
-                    System.out.println("size of localvar area = " + procEntry.varAreaSize);
-                    System.out.println("size of outgoing area = " + procEntry.outAreaSize + "\n");
+                    System.out.println("size of localvar area = " + procEntry.localvarAreaSize);
+                    System.out.println("size of outgoing area = " + procEntry.outgoingAreaSize + "\n");
                 }
 
             } else if (node.getClass() == ParDec.class) {
                 ((ParDec) node).accept(this);
-                System.out.println("fp + " + param.offset);
-                param = param.next;
+               // System.out.println("fp + " + param.offset);
+              //  param = param.next;
 
             } else if (node.getClass() == VarDec.class) {
                 ((VarDec) node).accept(this);
@@ -138,25 +130,10 @@ public class VarAllocator implements Visitor {
 
     }
 
-    public void visit(EmptyStm emptyStm) {
-    }
-
-    public void visit(ExpList expList) {
-    }
-
     public void visit(IfStm ifStm) {
         ifStm.thenPart.accept(this);
         ifStm.elsePart.accept(this);
 
-    }
-
-    public void visit(IntExp intExp) {
-    }
-
-    public void visit(NameTy nameTy) {
-    }
-
-    public void visit(OpExp opExp) {
     }
 
     public void visit(ParDec parDec) {
@@ -173,23 +150,23 @@ public class VarAllocator implements Visitor {
         if (showVarAlloc && !firstCompute) {
             ParamTypeList param = procEntry.paramTypes;
             int i = 1;
-            while (!param.isEmpty) {
-                System.out.println("arg " + i + ":" + " sp + " + param.offset);
+          while (!param.isEmpty()) {
+            //    System.out.println("arg " + i + ":" + " sp + " + param.offset);
                 i++;
-                param = param.next;
+            //    param = param.next;
             }
 
-            System.out.println("size of argument area = " + procEntry.argAreaSize);
+            System.out.println("size of argument area = " + procEntry.argumentAreaSize);
 
        /*print param's */
             procDec.params.accept(this);
         }
 
     /* compute access information for local vars*/
-        procDec.decls.accept(this);
+       // procDec.decls.accept(this);
 
      /* compute outgoing area sizes */
-        if (!firstCompute) procDec.body.accept(this);
+      //  if (!firstCompute) procDec.body.accept(this);
 
     }
 
@@ -215,16 +192,13 @@ public class VarAllocator implements Visitor {
 
         entry = procEntry.localTable.lookup(varDec.name);
 
-        varOffset = varOffset + (((VarEntry) entry).type).getByteSize();
+       // varOffset = varOffset + (((VarEntry) entry).type).getByteSize();
         ((VarEntry) entry).offset = varOffset;
 
         if (!(firstCompute) && showVarAlloc) {
             System.out.println("var '" + varDec.name.toString() + "': fp - " + varOffset);
         }
 
-    }
-
-    public void visit(VarExp varExp) {
     }
 
     public void visit(WhileStm whileStm) {
