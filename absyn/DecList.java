@@ -5,35 +5,26 @@
 
 package absyn;
 
-public class DecList extends Absyn implements VisitorElement {
+public class DecList extends ListNode implements VisitorElement {
 
-    public boolean isEmpty;
-    public Dec head;
-    public DecList tail;
 
     public DecList() {
-        row = -1;
-        col = -1;
-        isEmpty = true;
+        super();
     }
 
     public DecList(Dec h, DecList t) {
-        row = -1;
-        col = -1;
-        isEmpty = false;
-        head = h;
-        tail = t;
+        super(h,t);
     }
 
     public void show(int n) {
         indent(n);
-        DecList list = this;
+        ListNode list = this;
         say("DecList(");
-        while (!list.isEmpty) {
+        while (!list.isEmpty()) {
             say("\n");
             list.head.show(n + 1);
-            list = list.tail;
-            if (!list.isEmpty) {
+            list = list.tail();
+            if (!list.isEmpty()) {
                 say(",");
             }
         }

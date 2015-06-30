@@ -12,7 +12,7 @@ import table.ProcEntry;
 import table.Table;
 import table.VarEntry;
 import types.ParamTypeList;
-import visitor.Visitor;
+
 
 public class VarAllocator implements Visitor {
 

@@ -146,7 +146,7 @@ public class Codegen implements visitor.Visitor {
       head = expList.head;
       head.accept(this);
 
-        if (!paramHead.isRef) {
+        if (!paramHead.isRef()) {
         outWriter.format("\tldw\t$" + freeReg + ",$" + freeReg + "," + 0 + "\n");
       }
 

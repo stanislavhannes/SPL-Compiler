@@ -11,8 +11,8 @@ import parse.*;
 import absyn.*;
 import table.*;
 import semant.*;
-import varalloc.*;
-import codegen.*;
+//import varalloc.*;
+//import codegen.*;
 
 
 class Main {
@@ -109,11 +109,11 @@ class Main {
 			}
 
 			Table globalTable = new SemanticChecker().check(program, optionTables);
-			new VarAllocator(globalTable, optionVars).allocVars(program);
+			//new VarAllocator(globalTable, optionVars).allocVars(program);
 			
 			try {
 				FileWriter outFile = new FileWriter(outFileName);
-				new Codegenerator(outFile).genCode(program, globalTable);
+				//new Codegenerator(outFile).genCode(program, globalTable);
 				outFile.close();
 			} catch (FileNotFoundException e) {
 				errmsg("**** Error: cannot open output file '" +

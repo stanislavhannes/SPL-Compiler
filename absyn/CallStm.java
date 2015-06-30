@@ -20,6 +20,10 @@ public class CallStm extends Stm implements VisitorElement {
         args = a;
     }
 
+    public String id(){
+        return name.toString();
+    }
+
     public void show(int n) {
         indent(n);
         say("CallStm(\n");

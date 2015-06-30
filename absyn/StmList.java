@@ -6,11 +6,9 @@
 package absyn;
 
 
-public class StmList extends Absyn implements VisitorElement {
+import java.util.List;
 
-    public boolean isEmpty;
-    public Stm head;
-    public StmList tail;
+public class StmList extends ListNode implements VisitorElement {
 
     public StmList() {
         row = -1;
@@ -19,21 +17,17 @@ public class StmList extends Absyn implements VisitorElement {
     }
 
     public StmList(Stm h, StmList t) {
-        row = -1;
-        col = -1;
-        isEmpty = false;
-        head = h;
-        tail = t;
+        super(h,t);
     }
 
     public void show(int n) {
         indent(n);
-        StmList list = this;
+        ListNode list = this;
         say("StmList(");
         while (!list.isEmpty) {
             say("\n");
             list.head.show(n + 1);
-            list = list.tail;
+            list = list.tail();
             if (!list.isEmpty) {
                 say(",");
             }

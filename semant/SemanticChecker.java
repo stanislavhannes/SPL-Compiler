@@ -6,7 +6,7 @@ import absyn.*;
 import sym.Sym;
 import table.*;
 import types.*;
-import varalloc.*;
+//import varalloc.*;
 import java.lang.Class;
 
 /**
@@ -20,22 +20,15 @@ import java.lang.Class;
 
 public class SemanticChecker {
 
-	static final Type intType = new PrimitiveType("int", VarAllocator.INTBYTESIZE);
-	static final Type boolType = new PrimitiveType("boolean", VarAllocator.BOOLBYTESIZE);
+	static final Type intType = new PrimitiveType("int", 4);
+	static final Type boolType = new PrimitiveType("boolean", 4);
 
 	public Table check(Absyn program, boolean showTables) {
-		Table globalTable = new Table;
-		new TableInitializer().intializeSymbolTable(globalTable);
-
-		/* do semantic checks in 2 passes */
+		Table globalTable = new TableBuilder().buildSymbolTables(program,showTables);
+		checkMainProcedure(globalTable);
 		new ProcedureBodyChecker().check(program, globalTable);
-		checkNode(program, globalTable);
 
-
-		 /* return global symbol table */
 		return globalTable;
-
-           /* hier gibts noch was zu tun: das Meiste kann an Visitor-Objekte delegiert werden */
 	}
 
 	static void checkClass (Object object, Class<?> expectedClass, String errorMessage, int lineNo)  {
@@ -56,16 +49,14 @@ public class SemanticChecker {
 			);
 		}
 
-		if (!(entry instanceof ProcEntry)) {
-			throw new RuntimeException(
-					"'main' is not a procedure"
-			);
-		}
+		checkClass(entry, ProcEntry.class, "'main' is not a procedure");
 
 		if (!(((ProcEntry) entry).paramTypes.isEmpty())) {
 			throw new RuntimeException(
 					"procedure 'main' must not have any parameters"
 			);
 		}
+
 	}
+
 }

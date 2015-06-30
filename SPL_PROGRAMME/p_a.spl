@@ -2,15 +2,21 @@
 //Programm a)
 //Im Hauptprogramm: Eingabe von zwei Zahlen, Ausgabe der Summe.
 //
+type typ = array [8] of int;
+type typ2 = array [4] of int;
+
+
+
+
+
 proc main(){
 var e1: int;
-//allocate frame 16 = 4 var + 4 oldfp + 4 retreg + 4 out area size 
-e1 := 2;
+var e2: typ;
 
-test(e1);
+//allocate frame 16 = 4 var + 4 oldfp + 4 retreg + 4 out area size
+e1 := 3;
 
-
-
+test(e2,e1);
 
 //printc(49);
 //readi(e1);
@@ -22,6 +28,9 @@ test(e1);
 
 }
 
-proc test(i:int){
-i := 1;
+
+proc test(ref i:typ, a:int){
+var a1: typ2;
+i[0] := 1 + 5;
+a[typ] := 0;
 }
