@@ -11,7 +11,7 @@ import parse.*;
 import absyn.*;
 import table.*;
 import semant.*;
-//import varalloc.*;
+import varalloc.*;
 //import codegen.*;
 
 
@@ -109,7 +109,7 @@ class Main {
 			}
 
 			Table globalTable = new SemanticChecker().check(program, optionTables);
-			//new VarAllocator(globalTable, optionVars).allocVars(program);
+			new VarAllocator(globalTable, optionVars).allocVars(program);
 			
 			try {
 				FileWriter outFile = new FileWriter(outFileName);

@@ -6,6 +6,7 @@ import absyn.*;
 import sym.Sym;
 import table.*;
 import types.*;
+import varalloc.VarAllocator;
 //import varalloc.*;
 import java.lang.Class;
 
@@ -20,8 +21,8 @@ import java.lang.Class;
 
 public class SemanticChecker {
 
-	static final Type intType = new PrimitiveType("int", 4);
-	static final Type boolType = new PrimitiveType("boolean", 4);
+	static final Type intType = new PrimitiveType("int", VarAllocator.INTBYTESIZE);
+	static final Type boolType = new PrimitiveType("boolean", VarAllocator.BOOLBYTESIZE);
 
 	public Table check(Absyn program, boolean showTables) {
 		Table globalTable = new TableBuilder().buildSymbolTables(program,showTables);

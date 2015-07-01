@@ -11,10 +11,13 @@ import table.Entry;
 import table.ProcEntry;
 import table.Table;
 import table.VarEntry;
+import types.ParamType;
 import types.ParamTypeList;
 
+import java.util.Iterator;
 
-public class VarAllocator implements Visitor {
+
+public class VarAllocator extends DoNothingVisitor {
 
     public static final int INTBYTESIZE = 4;
     public static final int BOOLBYTESIZE = 4;
@@ -57,22 +60,23 @@ public class VarAllocator implements Visitor {
 
 
     /* compute access information for arguments, parameters and local vars */
-        ((DecList) program).accept(this);
+        program.accept(this);
         firstCompute = false;
-        ((DecList) program).accept(this);
+        program.accept(this);
 
     }
 
     private void calcParamOffset(ProcEntry entry) {
-        ParamTypeList param = entry.paramTypes;
+        ParamType param;
+        Iterator<ParamType> paramIterator = entry.paramTypes.iterator();
         int size = 0;
 
-        while (!param.isEmpty) {
+        while (paramIterator.hasNext()) {
+            param = paramIterator.next();
             param.offset = size;
             size += param.isRef ? REFBYTESIZE : param.type.getByteSize();
-            param = param.next;
         }
-        entry.argAreaSize = size;  //size of argument area
+        entry.argumentAreaSize = size;  //size of argument area
     }
 
     public void visit(ArrayTy arrayTy) {
@@ -87,11 +91,11 @@ public class VarAllocator implements Visitor {
     public void visit(CallStm callStm) {
 
         ProcEntry entry = (ProcEntry) globalTable.lookup(callStm.name);
-        int argAreaSize = entry.argAreaSize;
-        procEntry.stmCall = true;
+        int argAreaSize = entry.argumentAreaSize;
+        //procEntry.stmCall = true;
 
-        if (procEntry.outAreaSize < argAreaSize)
-            procEntry.outAreaSize = argAreaSize;
+        if (procEntry.outgoingAreaSize < argAreaSize)
+            procEntry.argumentAreaSize = argAreaSize;
 
     }
 
@@ -104,7 +108,12 @@ public class VarAllocator implements Visitor {
         ParamTypeList param = null;
         if (procEntry != null) param = procEntry.paramTypes;
 
-        while (!decList.isEmpty) {
+        // for (Absyn aDl : decList) {
+         //   aDl.accept(this);
+         // }
+       // ListNodeIterator<Absyn> decinter = decList.iterator();
+
+        while (!decList.isEmpty()) {
             node = decList.head;
 
             if (node.getClass() == ProcDec.class) {
@@ -115,12 +124,12 @@ public class VarAllocator implements Visitor {
                 procEntry = ((ProcEntry) globalTable.lookup(((ProcDec) node).name));
                 ((ProcDec) node).accept(this);
 
-                procEntry.varAreaSize = varOffset;
+                procEntry.localvarAreaSize = varOffset;
                 varOffset = 0;
 
                 if ((!firstCompute) && showVarAlloc) {
-                    System.out.println("size of localvar area = " + procEntry.varAreaSize);
-                    System.out.println("size of outgoing area = " + procEntry.outAreaSize + "\n");
+                    System.out.println("size of localvar area = " + procEntry.localvarAreaSize);
+                    System.out.println("size of outgoing area = " + procEntry.outgoingAreaSize + "\n");
                 }
 
             } else if (node.getClass() == ParDec.class) {
@@ -173,13 +182,13 @@ public class VarAllocator implements Visitor {
         if (showVarAlloc && !firstCompute) {
             ParamTypeList param = procEntry.paramTypes;
             int i = 1;
-            while (!param.isEmpty) {
+            while (!param.isEmpty()) {
                 System.out.println("arg " + i + ":" + " sp + " + param.offset);
                 i++;
                 param = param.next;
             }
 
-            System.out.println("size of argument area = " + procEntry.argAreaSize);
+            System.out.println("size of argument area = " + procEntry.argumentAreaSize);
 
        /*print param's */
             procDec.params.accept(this);
@@ -199,7 +208,7 @@ public class VarAllocator implements Visitor {
     public void visit(StmList stmList) {
         Stm head;
 
-        while (!stmList.isEmpty) {
+        while (!stmList.isEmpty()) {
             head = stmList.head;
             head.accept(this);
             stmList = stmList.tail;

@@ -10,6 +10,7 @@ public abstract class Type {
 
   public int byteSize;
 
+  public int getByteSize(){ return byteSize;}
   public abstract void show();
 
 }
