@@ -14,7 +14,7 @@ public class ProcEntry extends Entry {
   public Table localTable;
   public int argumentAreaSize;	/* filled in by variable allocator */
   public int localvarAreaSize;	/* filled in by variable allocator */
-  public int outgoingAreaSize;	/* filled in by variable allocator */
+  public int outgoingAreaSize = -1;	/* filled in by variable allocator */
 
   public ProcEntry(ParamTypeList p, Table t) {
     paramTypes = p;

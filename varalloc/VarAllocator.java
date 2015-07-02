@@ -12,8 +12,6 @@ import table.ProcEntry;
 import table.Table;
 import table.VarEntry;
 import types.ParamType;
-import types.ParamTypeList;
-
 import java.util.Iterator;
 
 
@@ -28,6 +26,7 @@ public class VarAllocator extends DoNothingVisitor {
     private int varOffset = 0;
     private ProcEntry procEntry = null;
     private boolean firstCompute = true;
+    private Iterator<ParamType> paramIterator;
 
     public VarAllocator(Table t, boolean s) {
         globalTable = t;
@@ -79,24 +78,12 @@ public class VarAllocator extends DoNothingVisitor {
         entry.argumentAreaSize = size;  //size of argument area
     }
 
-    public void visit(ArrayTy arrayTy) {
-    }
-
-    public void visit(ArrayVar arrayVar) {
-    }
-
-    public void visit(AssignStm assignStm) {
-    }
-
     public void visit(CallStm callStm) {
-
         ProcEntry entry = (ProcEntry) globalTable.lookup(callStm.name);
         int argAreaSize = entry.argumentAreaSize;
-        //procEntry.stmCall = true;
 
         if (procEntry.outgoingAreaSize < argAreaSize)
-            procEntry.argumentAreaSize = argAreaSize;
-
+            procEntry.outgoingAreaSize = argAreaSize;
     }
 
     public void visit(CompStm compStm) {
@@ -104,90 +91,49 @@ public class VarAllocator extends DoNothingVisitor {
     }
 
     public void visit(DecList decList) {
-        Dec node;
-        ParamTypeList param = null;
-        if (procEntry != null) param = procEntry.paramTypes;
+        ListNodeIterator decListIterator = decList.iterator();
+        if (procEntry != null) paramIterator = procEntry.paramTypes.iterator();
 
-        // for (Absyn aDl : decList) {
-         //   aDl.accept(this);
-         // }
-       // ListNodeIterator<Absyn> decinter = decList.iterator();
-
-        while (!decList.isEmpty()) {
-            node = decList.head;
-
-            if (node.getClass() == ProcDec.class) {
-                if ((!firstCompute) && showVarAlloc)
-                    System.out.println("Variable allocation for procedure '"
-                            + ((ProcDec) node).name.toString() + "'");
-
-                procEntry = ((ProcEntry) globalTable.lookup(((ProcDec) node).name));
-                ((ProcDec) node).accept(this);
-
-                procEntry.localvarAreaSize = varOffset;
-                varOffset = 0;
-
-                if ((!firstCompute) && showVarAlloc) {
-                    System.out.println("size of localvar area = " + procEntry.localvarAreaSize);
-                    System.out.println("size of outgoing area = " + procEntry.outgoingAreaSize + "\n");
-                }
-
-            } else if (node.getClass() == ParDec.class) {
-                ((ParDec) node).accept(this);
-                System.out.println("fp + " + param.offset);
-                param = param.next;
-
-            } else if (node.getClass() == VarDec.class) {
-                ((VarDec) node).accept(this);
-            }
-
-            decList = decList.tail;
+        while (decListIterator.hasNext()) {
+            decListIterator.next().accept(this);
         }
-
-
-    }
-
-    public void visit(EmptyStm emptyStm) {
-    }
-
-    public void visit(ExpList expList) {
     }
 
     public void visit(IfStm ifStm) {
         ifStm.thenPart.accept(this);
         ifStm.elsePart.accept(this);
-
-    }
-
-    public void visit(IntExp intExp) {
-    }
-
-    public void visit(NameTy nameTy) {
-    }
-
-    public void visit(OpExp opExp) {
     }
 
     public void visit(ParDec parDec) {
+        ParamType parameter;
         System.out.print("param '" + parDec.name.toString() + "': ");
+        if(paramIterator.hasNext()) {
+            parameter = paramIterator.next();
+            System.out.println("fp + " + parameter.offset);
+        }
     }
 
     public void visit(ProcDec procDec) {
-
+        /*prints headtitle for the procedure*/
+        if ((!firstCompute) && showVarAlloc) {
+            System.out.println("Variable allocation for procedure '"
+                    + procDec.name.toString() + "'");
+        }
+        procEntry = ((ProcEntry) globalTable.lookup(procDec.name));
 
         calcParamOffset(procEntry);
 
+        /*print arguments and size of arg area*/
 
-    /*print args, size of arg area and params*/
         if (showVarAlloc && !firstCompute) {
-            ParamTypeList param = procEntry.paramTypes;
+            Iterator<ParamType> argIterator = procEntry.paramTypes.iterator();
+            ParamType parameter;
             int i = 1;
-            while (!param.isEmpty()) {
-                System.out.println("arg " + i + ":" + " sp + " + param.offset);
+            while (argIterator.hasNext()) {
+                parameter = argIterator.next();
+                System.out.println("arg " + i + ":" + " sp + " + parameter.offset);
                 i++;
-                param = param.next;
             }
-
             System.out.println("size of argument area = " + procEntry.argumentAreaSize);
 
        /*print param's */
@@ -200,29 +146,22 @@ public class VarAllocator extends DoNothingVisitor {
      /* compute outgoing area sizes */
         if (!firstCompute) procDec.body.accept(this);
 
-    }
+        procEntry.localvarAreaSize = varOffset;
+        varOffset = 0;
 
-    public void visit(SimpleVar simpleVar) {
+        if ((!firstCompute) && showVarAlloc) {
+            System.out.println("size of localvar area = " + procEntry.localvarAreaSize);
+            System.out.println("size of outgoing area = " + procEntry.outgoingAreaSize + "\n");
+        }
+
     }
 
     public void visit(StmList stmList) {
-        Stm head;
-
-        while (!stmList.isEmpty()) {
-            head = stmList.head;
-            head.accept(this);
-            stmList = stmList.tail;
-
-        }
-    }
-
-    public void visit(TypeDec typeDec) {
+        for (Absyn aSl : stmList) aSl.accept(this);
     }
 
     public void visit(VarDec varDec) {
-        Entry entry;
-
-        entry = procEntry.localTable.lookup(varDec.name);
+        Entry entry = procEntry.localTable.lookup(varDec.name);
 
         varOffset = varOffset + (((VarEntry) entry).type).getByteSize();
         ((VarEntry) entry).offset = varOffset;
@@ -230,15 +169,10 @@ public class VarAllocator extends DoNothingVisitor {
         if (!(firstCompute) && showVarAlloc) {
             System.out.println("var '" + varDec.name.toString() + "': fp - " + varOffset);
         }
-
-    }
-
-    public void visit(VarExp varExp) {
     }
 
     public void visit(WhileStm whileStm) {
         whileStm.body.accept(this);
     }
-
 
 }

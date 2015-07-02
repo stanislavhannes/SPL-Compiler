@@ -1,0 +1,35 @@
+
+Variable allocation for procedure 'main'
+size of argument area = 0
+var 'row': fp - 32
+var 'col': fp - 64
+var 'diag1': fp - 124
+var 'diag2': fp - 184
+var 'i': fp - 188
+size of localvar area = 188
+size of outgoing area = 20
+
+Variable allocation for procedure 'try'
+arg 1: sp + 0
+arg 2: sp + 4
+arg 3: sp + 8
+arg 4: sp + 12
+arg 5: sp + 16
+size of argument area = 20
+param 'c': fp + 0
+param 'row': fp + 4
+param 'col': fp + 8
+param 'diag1': fp + 12
+param 'diag2': fp + 16
+var 'r': fp - 4
+size of localvar area = 4
+size of outgoing area = 20
+
+Variable allocation for procedure 'printboard'
+arg 1: sp + 0
+size of argument area = 4
+param 'col': fp + 0
+var 'i': fp - 4
+var 'j': fp - 8
+size of localvar area = 8
+size of outgoing area = 4

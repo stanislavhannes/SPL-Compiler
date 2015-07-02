@@ -32,5 +32,5 @@ test(e2,e1);
 proc test(ref i:typ, a:int){
 var a1: typ2;
 i[0] := 1 + 5;
-a[typ] := 0;
+//a[typ] := 0;
 }
