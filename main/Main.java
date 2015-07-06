@@ -12,7 +12,7 @@ import absyn.*;
 import table.*;
 import semant.*;
 import varalloc.*;
-//import codegen.*;
+import codegen.*;
 
 
 class Main {
@@ -113,7 +113,7 @@ class Main {
 			
 			try {
 				FileWriter outFile = new FileWriter(outFileName);
-				//new Codegenerator(outFile).genCode(program, globalTable);
+				new Codegenerator(outFile).genCode(program, globalTable);
 				outFile.close();
 			} catch (FileNotFoundException e) {
 				errmsg("**** Error: cannot open output file '" +

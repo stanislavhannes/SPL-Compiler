@@ -1,35 +1,54 @@
+	.import	printi
+	.import	printc
+	.import	readi
+	.import	readc
+	.import	exit
+	.import	time
+	.import	clearAll
+	.import	setPixel
+	.import	drawLine
+	.import	drawCircle
+	.import	_indexError
 
-Variable allocation for procedure 'main'
-size of argument area = 0
-var 'row': fp - 32
-var 'col': fp - 64
-var 'diag1': fp - 124
-var 'diag2': fp - 184
-var 'i': fp - 188
-size of localvar area = 188
-size of outgoing area = 20
+	.code
+	.align	4
 
-Variable allocation for procedure 'try'
-arg 1: sp + 0
-arg 2: sp + 4
-arg 3: sp + 8
-arg 4: sp + 12
-arg 5: sp + 16
-size of argument area = 20
-param 'c': fp + 0
-param 'row': fp + 4
-param 'col': fp + 8
-param 'diag1': fp + 12
-param 'diag2': fp + 16
-var 'r': fp - 4
-size of localvar area = 4
-size of outgoing area = 20
+	.export	main
+main:
+	sub	$29,$29,52		; allocate frame
+	stw	$25,$29,12		; save old frame pointer
+	add	$25,$29,52		; setup new frame pointer
+	stw	$31,$25,-44		; save return register
+	add	$8,$25,-4
+	add	$9,$0,3
+	stw	$9,$8,0
+	add	$8,$25,-36
+	stw	$8,$29,0		; store arg #0
+	add	$8,$25,-4
+	ldw	$8,$8,0
+	stw	$8,$29,4		; store arg #1
+	jal	test
+	ldw	$31,$25,-44		; restore return register
+	ldw	$25,$29,12		; restore old frame pointer
+	add	$29,$29,52		; release frame
+	jr	$31			; return
 
-Variable allocation for procedure 'printboard'
-arg 1: sp + 0
-size of argument area = 4
-param 'col': fp + 0
-var 'i': fp - 4
-var 'j': fp - 8
-size of localvar area = 8
-size of outgoing area = 4
+	.export	test
+test:
+	sub	$29,$29,20		; allocate frame
+	stw	$25,$29,0		; save old frame pointer
+	add	$25,$29,20		; setup new frame pointer
+	add	$8,$25,0
+	ldw	$8,$8,0
+	add	$9,$0,0
+	add	$10,$0,8
+	bgeu	$9,$10,_indexError
+	mul	$9,$9,4
+	add	$8,$8,$9
+	add	$9,$0,1
+	add	$10,$0,5
+	add	$9,$9,$10
+	stw	$9,$8,0
+	ldw	$25,$29,0		; restore old frame pointer
+	add	$29,$29,20		; release frame
+	jr	$31			; return
