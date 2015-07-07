@@ -78,7 +78,7 @@ class TableBuilder {
 
 		@Override
 		public void visit(ArrayTy node) {
-			node.ty.accept(this);
+			node.baseTy.accept(this);
 			type = new ArrayType(node.size, type);
 		}
 

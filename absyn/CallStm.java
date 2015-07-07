@@ -8,7 +8,7 @@ package absyn;
 import sym.Sym;
 
 
-public class CallStm extends Stm implements VisitorElement {
+public class CallStm extends Stm{
 
     public Sym name;
     public ExpList args;
@@ -24,15 +24,6 @@ public class CallStm extends Stm implements VisitorElement {
         return name.toString();
     }
 
-    public void show(int n) {
-        indent(n);
-        say("CallStm(\n");
-        indent(n + 1);
-        say(name.toString());
-        say(",\n");
-        args.show(n + 1);
-        say(")");
-    }
 
     public void accept(Visitor v) {
         v.visit(this);

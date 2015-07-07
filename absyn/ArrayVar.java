@@ -5,7 +5,7 @@
 
 package absyn;
 
-public class ArrayVar extends Var implements VisitorElement {
+public class ArrayVar extends Var{
 
     public Var var;
     public Exp index;
@@ -17,14 +17,6 @@ public class ArrayVar extends Var implements VisitorElement {
         index = i;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("ArrayVar(\n");
-        var.show(n + 1);
-        say(",\n");
-        index.show(n + 1);
-        say(")");
-    }
 
     public void accept(Visitor v) {
         v.visit(this);

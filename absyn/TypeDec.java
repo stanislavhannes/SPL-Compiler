@@ -8,7 +8,7 @@ package absyn;
 import sym.Sym;
 
 
-public class TypeDec extends Dec implements VisitorElement {
+public class TypeDec extends Dec{
 
     public Sym name;
     public Ty ty;
@@ -20,14 +20,8 @@ public class TypeDec extends Dec implements VisitorElement {
         ty = t;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("TypeDec(\n");
-        indent(n + 1);
-        say(name.toString());
-        say(",\n");
-        ty.show(n + 1);
-        say(")");
+    public String id(){
+        return name.toString();
     }
 
     public void accept(Visitor v) {

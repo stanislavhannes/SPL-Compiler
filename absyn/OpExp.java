@@ -31,54 +31,6 @@ public class OpExp extends Exp {
         right = e2;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("OpExp(\n");
-        indent(n + 1);
-        switch (op) {
-            case EQU:
-                say("EQU");
-                break;
-            case NEQ:
-                say("NEQ");
-                break;
-            case LST:
-                say("LST");
-                break;
-            case LSE:
-                say("LSE");
-                break;
-            case GRT:
-                say("GRT");
-                break;
-            case GRE:
-                say("GRE");
-                break;
-            case ADD:
-                say("ADD");
-                break;
-            case SUB:
-                say("SUB");
-                break;
-            case MUL:
-                say("MUL");
-                break;
-            case DIV:
-                say("DIV");
-                break;
-            default:
-                throw new RuntimeException(
-                        "unknown operator " + op + " in OpExp.show"
-                );
-        }
-        say(",\n");
-        left.show(n + 1);
-        say(",\n");
-        right.show(n + 1);
-        say(")");
-    }
-
-
     public void accept(Visitor v) {
         v.visit(this);
     }

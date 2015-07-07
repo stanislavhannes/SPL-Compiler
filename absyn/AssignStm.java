@@ -6,7 +6,7 @@
 package absyn;
 
 
-public class AssignStm extends Stm implements VisitorElement {
+public class AssignStm extends Stm{
 
     public Var var;
     public Exp exp;
@@ -18,14 +18,6 @@ public class AssignStm extends Stm implements VisitorElement {
         exp = e;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("AssignStm(\n");
-        var.show(n + 1);
-        say(",\n");
-        exp.show(n + 1);
-        say(")");
-    }
 
     public void accept(Visitor v) {
         v.visit(this);

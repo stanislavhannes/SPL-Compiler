@@ -5,7 +5,7 @@
 
 package absyn;
 
-public class CompStm extends Stm implements VisitorElement {
+public class CompStm extends Stm{
 
     public StmList stms;
 
@@ -15,12 +15,6 @@ public class CompStm extends Stm implements VisitorElement {
         stms = s;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("CompStm(\n");
-        stms.show(n + 1);
-        say(")");
-    }
 
     @Override
     public void accept(Visitor v) {

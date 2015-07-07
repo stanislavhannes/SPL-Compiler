@@ -1,0 +1,12 @@
+type paartyp = array[2] of int;
+
+proc p (ref i:int, j:int){
+    var paar: paartyp;
+    paar[j] := i;
+    printi(i);
+}
+
+proc main(){
+    var v:int;
+    p(v,1);    
+}

@@ -5,27 +5,18 @@
 
 package absyn;
 
-public class ArrayTy extends Ty implements VisitorElement {
+public class ArrayTy extends Ty {
 
     public int size;
-    public Ty ty;
+    public Ty baseTy;
 
     public ArrayTy(int r, int c, int s, Ty t) {
         row = r;
         col = c;
         size = s;
-        ty = t;
+        baseTy = t;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("ArrayTy(\n");
-        indent(n + 1);
-        sayInt(size);
-        say(",\n");
-        ty.show(n + 1);
-        say(")");
-    }
 
     public void accept(Visitor v) {
         v.visit(this);

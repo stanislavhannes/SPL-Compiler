@@ -7,7 +7,7 @@ package absyn;
 
 import  sym.Sym;
 
-public class SimpleVar extends Var implements VisitorElement {
+public class SimpleVar extends Var{
 
     public Sym name;
 
@@ -15,13 +15,6 @@ public class SimpleVar extends Var implements VisitorElement {
         row = r;
         col = c;
         name = n;
-    }
-
-    public void show(int n) {
-        indent(n);
-        say("SimpleVar(");
-        say(name.toString());
-        say(")");
     }
 
     public void accept(Visitor v) {

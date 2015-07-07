@@ -5,7 +5,7 @@
 
 package absyn;
 
-public class WhileStm extends Stm implements VisitorElement {
+public class WhileStm extends Stm{
 
     public Exp test;
     public Stm body;
@@ -15,15 +15,6 @@ public class WhileStm extends Stm implements VisitorElement {
         col = c;
         test = t;
         body = b;
-    }
-
-    public void show(int n) {
-        indent(n);
-        say("WhileStm(\n");
-        test.show(n + 1);
-        say(",\n");
-        body.show(n + 1);
-        say(")");
     }
 
     public void accept(Visitor v) {

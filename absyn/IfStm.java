@@ -5,7 +5,7 @@
 
 package absyn;
 
-public class IfStm extends Stm implements VisitorElement {
+public class IfStm extends Stm {
 
     public Exp test;
     public Stm thenPart;
@@ -19,16 +19,6 @@ public class IfStm extends Stm implements VisitorElement {
         elsePart = s2;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("IfStm(\n");
-        test.show(n + 1);
-        say(",\n");
-        thenPart.show(n + 1);
-        say(",\n");
-        elsePart.show(n + 1);
-        say(")");
-    }
 
     public void accept(Visitor v) {
         v.visit(this);

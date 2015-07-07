@@ -5,16 +5,11 @@
 
 package absyn;
 
-public class EmptyStm extends Stm implements VisitorElement {
+public class EmptyStm extends Stm {
 
     public EmptyStm(int r, int c) {
         row = r;
         col = c;
-    }
-
-    public void show(int n) {
-        indent(n);
-        say("EmptyStm()");
     }
 
     public void accept(Visitor v) {

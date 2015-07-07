@@ -7,7 +7,7 @@ package absyn;
 
 import sym.Sym;
 
-public class ParDec extends Dec implements VisitorElement {
+public class ParDec extends Dec {
 
     public Sym name;
     public Ty ty;
@@ -19,19 +19,6 @@ public class ParDec extends Dec implements VisitorElement {
         name = n;
         ty = t;
         isRef = i;
-    }
-
-    public void show(int n) {
-        indent(n);
-        say("ParDec(\n");
-        indent(n + 1);
-        say(name.toString());
-        say(",\n");
-        ty.show(n + 1);
-        say(",\n");
-        indent(n + 1);
-        sayBoolean(isRef);
-        say(")");
     }
 
     public void accept(Visitor v) {

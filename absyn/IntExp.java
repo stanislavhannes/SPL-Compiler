@@ -5,7 +5,7 @@
 
 package absyn;
 
-public class IntExp extends Exp implements VisitorElement {
+public class IntExp extends Exp {
 
     public int val;
 
@@ -13,13 +13,6 @@ public class IntExp extends Exp implements VisitorElement {
         row = r;
         col = c;
         val = v;
-    }
-
-    public void show(int n) {
-        indent(n);
-        say("IntExp(");
-        sayInt(val);
-        say(")");
     }
 
     public void accept(Visitor v) {

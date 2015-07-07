@@ -9,26 +9,20 @@ import sym.Sym;
 
 
 
-public class VarDec extends Dec implements VisitorElement {
+public class VarDec extends Dec{
 
     public Sym name;
     public Ty ty;
+
+    public String id(){
+        return name.toString();
+    }
 
     public VarDec(int r, int c, Sym n, Ty t) {
         row = r;
         col = c;
         name = n;
         ty = t;
-    }
-
-    public void show(int n) {
-        indent(n);
-        say("VarDec(\n");
-        indent(n + 1);
-        say(name.toString());
-        say(",\n");
-        ty.show(n + 1);
-        say(")");
     }
 
     public void accept(Visitor v) {

@@ -7,7 +7,7 @@ package absyn;
 
 import sym.Sym;
 
-public class NameTy extends Ty implements VisitorElement {
+public class NameTy extends Ty {
 
     public Sym name;
 
@@ -17,11 +17,8 @@ public class NameTy extends Ty implements VisitorElement {
         name = n;
     }
 
-    public void show(int n) {
-        indent(n);
-        say("NameTy(");
-        say(name.toString());
-        say(")");
+    public String id(){
+        return name.toString();
     }
 
     public void accept(Visitor v) {

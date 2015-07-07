@@ -6,7 +6,7 @@
 package absyn;
 
 
-public class VarExp extends Exp implements VisitorElement {
+public class VarExp extends Exp {
 
     public Var var;
 
@@ -15,14 +15,6 @@ public class VarExp extends Exp implements VisitorElement {
         col = c;
         var = v;
     }
-
-    public void show(int n) {
-        indent(n);
-        say("VarExp(\n");
-        var.show(n + 1);
-        say(")");
-    }
-
 
     public void accept(Visitor v) {
         v.visit(this);
