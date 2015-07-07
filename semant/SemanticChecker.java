@@ -7,7 +7,6 @@ import sym.Sym;
 import table.*;
 import types.*;
 import varalloc.VarAllocator;
-//import varalloc.*;
 import java.lang.Class;
 
 /**

@@ -104,6 +104,7 @@ public class VarAllocator extends DoNothingVisitor {
         ifStm.elsePart.accept(this);
     }
 
+    //TODO: Offset für VarEntry die aus Parametern erstellt wurden fehlen
     public void visit(ParDec parDec) {
         ParamType parameter;
         System.out.print("param '" + parDec.name.toString() + "': ");
@@ -161,10 +162,12 @@ public class VarAllocator extends DoNothingVisitor {
     }
 
     public void visit(VarDec varDec) {
-        Entry entry = procEntry.localTable.lookup(varDec.name);
+        VarEntry entry =(VarEntry) procEntry.localTable.lookup(varDec.name);
 
-        varOffset = varOffset + (((VarEntry) entry).type).getByteSize();
-        ((VarEntry) entry).offset = varOffset;
+
+        varOffset = varOffset + entry.type.getByteSize();
+        entry.offset = varOffset;
+        System.out.println("---varalloc : " + varDec.name.toString() + " offset = " + entry.offset);
 
         if (!(firstCompute) && showVarAlloc) {
             System.out.println("var '" + varDec.name.toString() + "': fp - " + varOffset);
