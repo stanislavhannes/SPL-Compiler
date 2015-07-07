@@ -8,6 +8,7 @@ import java.io.*;
 import absyn.*;
 import table.*;
 import types.*;
+import varalloc.VarAllocator;
 
 public class Codegenerator {
 
@@ -95,6 +96,8 @@ public class Codegenerator {
 	public class CodegenVisitor extends DoNothingVisitor {
 		private Table globalTable;
 		private int actReg;
+		private ProcEntry actProcEntry;
+		private String label;
 
 		public CodegenVisitor(Table t, int firstReg) {
 			this.globalTable = t;
@@ -103,12 +106,41 @@ public class Codegenerator {
 		}
 
 		public void visit(ProcDec node) {
+			int retByteSize = VarAllocator.INTBYTESIZE;
+			int frameByteSize = VarAllocator.INTBYTESIZE;
+			int oldRetOffset;
+			int oldFrameOffset;
+			int frameRange;
+
+
 			/* get symbol table entry for this procedure */
-			ProcEntry entry = (ProcEntry) globalTable.lookup(node.name);
+			ProcEntry actProcEntry = (ProcEntry) globalTable.lookup(node.name);
+			emit("\t.export\t"+node.id());
 
 			/* prolog */
+			// calc Frame Range to allocate the Frame
+			frameRange = actProcEntry.localvarAreaSize + frameByteSize + retByteSize;
+			frameRange += (actProcEntry.outgoingAreaSize < 0) ? 0 : actProcEntry.outgoingAreaSize;
+			emitRRI("sub",29,29,frameRange, "allocate frame");
+
+			//save old frame pointer
+			oldFrameOffset = retByteSize;
+			oldFrameOffset += (actProcEntry.outgoingAreaSize < 0) ? 0 : actProcEntry.outgoingAreaSize;
+			emitRRI("stw",25,29,oldFrameOffset,"save old frame pointer");
+
+			//setup new frame pointer
+			emitRRI("add",25,29,frameRange, "setup new frame pointer");
+
+			//save old return register
+			oldRetOffset = actProcEntry.localvarAreaSize + frameByteSize + retByteSize;
+			emitRRI("stw",31,25,-oldRetOffset, "save return register");
 
 			/* epilog */
+		}
+
+		@Override
+		public void visit(DecList dl) {
+			for (Absyn aDl : dl) aDl.accept(this);
 		}
 
 

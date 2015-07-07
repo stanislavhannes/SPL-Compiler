@@ -13,45 +13,42 @@
 	.code
 	.align	4
 
-	.export	p
-p:
+	.export	main
+main:
+	sub	$29,$29,52		; allocate frame
+	stw	$25,$29,12		; save old frame pointer
+	add	$25,$29,52		; setup new frame pointer
+	stw	$31,$25,-44		; save return register
+	add	$8,$25,-4
+	add	$9,$0,3
+	stw	$9,$8,0
+	add	$8,$25,-36
+	stw	$8,$29,0		; store arg #0
+	add	$8,$25,-4
+	ldw	$8,$8,0
+	stw	$8,$29,4		; store arg #1
+	jal	test
+	ldw	$31,$25,-44		; restore return register
+	ldw	$25,$29,12		; restore old frame pointer
+	add	$29,$29,52		; release frame
+	jr	$31			; return
+
+	.export	test
+test:
 	sub	$29,$29,20		; allocate frame
-	stw	$25,$29,8		; save old frame pointer
+	stw	$25,$29,0		; save old frame pointer
 	add	$25,$29,20		; setup new frame pointer
-	stw	$31,$25,-16		; save return register
-	add	$8,$25,-8
-	add	$9,$25,4
-	ldw	$9,$9,0
-	add	$10,$0,2
+	add	$8,$25,0
+	ldw	$8,$8,0
+	add	$9,$0,0
+	add	$10,$0,8
 	bgeu	$9,$10,_indexError
 	mul	$9,$9,4
 	add	$8,$8,$9
-	add	$9,$25,0
-	ldw	$9,$9,0
-	ldw	$9,$9,0
+	add	$9,$0,1
+	add	$10,$0,5
+	add	$9,$9,$10
 	stw	$9,$8,0
-	add	$8,$25,0
-	ldw	$8,$8,0
-	ldw	$8,$8,0
-	stw	$8,$29,0		; store arg #0
-	jal	printi
-	ldw	$31,$25,-16		; restore return register
-	ldw	$25,$29,8		; restore old frame pointer
-	add	$29,$29,20		; release frame
-	jr	$31			; return
-
-	.export	main
-main:
-	sub	$29,$29,20		; allocate frame
-	stw	$25,$29,12		; save old frame pointer
-	add	$25,$29,20		; setup new frame pointer
-	stw	$31,$25,-12		; save return register
-	add	$8,$25,-4
-	stw	$8,$29,0		; store arg #0
-	add	$8,$0,1
-	stw	$8,$29,4		; store arg #1
-	jal	p
-	ldw	$31,$25,-12		; restore return register
-	ldw	$25,$29,12		; restore old frame pointer
+	ldw	$25,$29,0		; restore old frame pointer
 	add	$29,$29,20		; release frame
 	jr	$31			; return
