@@ -104,13 +104,20 @@ public class VarAllocator extends DoNothingVisitor {
         ifStm.elsePart.accept(this);
     }
 
-    //TODO: Offset für VarEntry die aus Parametern erstellt wurden fehlen
     public void visit(ParDec parDec) {
         ParamType parameter;
-        System.out.print("param '" + parDec.name.toString() + "': ");
+        VarEntry entry;
+
+        if (!firstCompute) System.out.print("param '" + parDec.name.toString() + "': ");
+
         if(paramIterator.hasNext()) {
             parameter = paramIterator.next();
-            System.out.println("fp + " + parameter.offset);
+
+            if (!firstCompute) System.out.println("fp + " + parameter.offset);
+
+            entry = (VarEntry)procEntry.localTable.lookup(parDec.name);
+            entry.offset = parameter.offset;
+
         }
     }
 
@@ -136,15 +143,15 @@ public class VarAllocator extends DoNothingVisitor {
                 i++;
             }
             System.out.println("size of argument area = " + procEntry.argumentAreaSize);
-
-       /*print param's */
-            procDec.params.accept(this);
         }
 
-    /* compute access information for local vars*/
+        /*calc and prints params offset*/
+        procDec.params.accept(this);
+
+        /* compute access information for local vars*/
         procDec.decls.accept(this);
 
-     /* compute outgoing area sizes */
+        /* compute outgoing area sizes */
         if (!firstCompute) procDec.body.accept(this);
 
         procEntry.localvarAreaSize = varOffset;
@@ -164,10 +171,8 @@ public class VarAllocator extends DoNothingVisitor {
     public void visit(VarDec varDec) {
         VarEntry entry =(VarEntry) procEntry.localTable.lookup(varDec.name);
 
-
         varOffset = varOffset + entry.type.getByteSize();
         entry.offset = varOffset;
-        System.out.println("---varalloc : " + varDec.name.toString() + " offset = " + entry.offset);
 
         if (!(firstCompute) && showVarAlloc) {
             System.out.println("var '" + varDec.name.toString() + "': fp - " + varOffset);

@@ -246,7 +246,7 @@ public class Codegenerator {
 			emitRRI("mul", actReg, actReg, av.dataType.byteSize);
 
 			//neue adresse von array pos innerhalb arrays in actReg-1 speichern
-			emitRRR("add", actReg - 1, actReg - 1, actReg);
+			emitRRI("add", actReg - 1, actReg - 1, actReg);
 		}
 
 		@Override
