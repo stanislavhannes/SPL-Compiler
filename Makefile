@@ -17,7 +17,7 @@ tests:			main/Main.class
 			@for i in Tests/test??.spl ; do \
 			  echo ; \
 			  echo -- Compiling $$i -- ; \
-			  spl $$i ; \
+			  ./spl $$i /dev/null ; \
 			done
 			@echo
 
@@ -47,3 +47,10 @@ dist-clean:		clean
 			rm -f main/*.class
 			rm -f parse/Scanner.java parse/Parser.java
 			rm -f parse/sym.java parse/*.class
+			rm -f absyn/*.class
+			rm -f codegen/*.class
+			rm -f semant/*.class
+			rm -f sym/*.class
+			rm -f table/*.class
+			rm -f types/*.class
+			rm -f varalloc/*.class
