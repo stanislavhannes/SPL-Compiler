@@ -216,7 +216,7 @@ public class Codegenerator {
 				emitRRI("add", actReg, 25, entryVar.offset, "local var: "+ sv.name);
 
 			if (entryVar.isRef)
-				emitRRI("ldw", actReg, actReg, 0);;
+				emitRRI("ldw", actReg, actReg, 0);
 
 			actReg++;
 		}
@@ -251,6 +251,7 @@ public class Codegenerator {
 			emitRRR("add", actReg - 1, actReg - 1, actReg);
 		}
 
+		//TODO: WhileStm besser umsetzen siehe letzte Seite Skript von Geisse
 		@Override
 		public void visit(WhileStm ws){
 			String l1 = newLabel();
@@ -270,6 +271,7 @@ public class Codegenerator {
 			emitLabel(l3);
 		}
 
+		//TODO: IfStm besser umsetzen siehe letzte Seite Skript von Geisse
 		@Override
 		public void visit(IfStm is){
 			String l1 = newLabel();

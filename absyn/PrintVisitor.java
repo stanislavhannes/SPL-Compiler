@@ -43,7 +43,7 @@ public class PrintVisitor extends Visitor {
 		say(",\n");
 		t.baseTy.show(indentation+1);
 		say(")");	
-	};
+	}
 
 	public void visit(ArrayVar v){
 		indent(indentation);

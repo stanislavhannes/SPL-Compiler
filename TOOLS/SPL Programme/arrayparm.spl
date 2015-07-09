@@ -1,0 +1,14 @@
+//
+// non-ref array parameter
+//
+
+type A = array [10] of int;
+
+proc p(x: A) {
+}
+
+proc main() {
+  var a: A;
+
+  p(a);
+}

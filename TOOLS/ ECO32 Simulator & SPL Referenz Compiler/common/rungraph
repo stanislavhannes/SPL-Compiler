@@ -1,0 +1,5 @@
+#!/bin/sh
+
+BIN=$1
+
+./sim -i -t 1 -g -l $BIN

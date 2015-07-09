@@ -48,7 +48,7 @@ public class Table {
 	public Entry lookup(Sym sym) {
 		Table table = this;
 		while (table != null) {
-			Entry entry = (Entry) table.dict.get(sym);
+			Entry entry = table.dict.get(sym);
 			if (entry != null) {
 				return entry;
 			}
@@ -73,8 +73,8 @@ public class Table {
 					.iterator();
 			while (iter.hasNext()) {
 				Map.Entry<Sym, Entry> pair = iter.next();
-				Sym sym = (Sym) (pair.getKey());
-				Entry entry = (Entry) (pair.getValue());
+				Sym sym = pair.getKey();
+				Entry entry = pair.getValue();
 				System.out.format("  %-10s --> ", sym.toString());
 				entry.show();
 				System.out.println();

@@ -1,0 +1,11 @@
+#!/bin/sh
+
+SRC=$1
+OBJ=`basename $SRC .asm`.obj
+BIN=`basename $SRC .asm`.bin
+MAP=`basename $SRC .asm`.map
+
+./as -o support.obj support.asm
+./as -o $OBJ $1
+./ld -rc 0xC0000000 -h -o $BIN -m $MAP support.obj $OBJ
+./rungraph $BIN
