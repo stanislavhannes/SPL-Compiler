@@ -108,12 +108,12 @@ public class VarAllocator extends DoNothingVisitor {
         ParamType parameter;
         VarEntry entry;
 
-        if (!firstCompute) System.out.print("param '" + parDec.name.toString() + "': ");
+        if (!firstCompute && showVarAlloc) System.out.print("param '" + parDec.name.toString() + "': ");
 
         if(paramIterator.hasNext()) {
             parameter = paramIterator.next();
 
-            if (!firstCompute) System.out.println("fp + " + parameter.offset);
+            if (!firstCompute && showVarAlloc) System.out.println("fp + " + parameter.offset);
 
             entry = (VarEntry)procEntry.localTable.lookup(parDec.name);
             entry.offset = parameter.offset;
@@ -172,7 +172,7 @@ public class VarAllocator extends DoNothingVisitor {
         VarEntry entry =(VarEntry) procEntry.localTable.lookup(varDec.name);
 
         varOffset = varOffset + entry.type.getByteSize();
-        entry.offset = varOffset;
+        entry.offset = -varOffset;
 
         if (!(firstCompute) && showVarAlloc) {
             System.out.println("var '" + varDec.name.toString() + "': fp - " + varOffset);

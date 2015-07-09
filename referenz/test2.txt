@@ -1,0 +1,42 @@
+symbol table at end of procedure 'sortiere':
+  level 0
+  hilf       --> var: int
+  x          --> var: ref array [5] of int
+  i          --> var: int
+  vertauscht --> var: int
+  n          --> var: int
+  level 1
+  int        --> type: int
+  readc      --> proc: (ref int)
+  drawLine   --> proc: (int, int, int, int, int)
+  printc     --> proc: (int)
+  time       --> proc: (ref int)
+  sortiere   --> proc: (ref array [5] of int)
+  main       --> proc: ()
+  setPixel   --> proc: (int, int, int)
+  readi      --> proc: (ref int)
+  A          --> type: array [5] of int
+  exit       --> proc: ()
+  drawCircle --> proc: (int, int, int, int)
+  printi     --> proc: (int)
+  clearAll   --> proc: (int)
+symbol table at end of procedure 'main':
+  level 0
+  a          --> var: array [5] of int
+  i          --> var: int
+  level 1
+  int        --> type: int
+  readc      --> proc: (ref int)
+  drawLine   --> proc: (int, int, int, int, int)
+  printc     --> proc: (int)
+  time       --> proc: (ref int)
+  sortiere   --> proc: (ref array [5] of int)
+  main       --> proc: ()
+  setPixel   --> proc: (int, int, int)
+  readi      --> proc: (ref int)
+  A          --> type: array [5] of int
+  exit       --> proc: ()
+  drawCircle --> proc: (int, int, int, int)
+  printi     --> proc: (int)
+  clearAll   --> proc: (int)
+Error: cannot open output file 'dev/null'

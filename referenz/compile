@@ -1,0 +1,12 @@
+#!/bin/sh
+
+SRC=$1
+ASM=`basename $SRC .spl`.asm
+OBJ=`basename $SRC .spl`.obj
+BIN=`basename $SRC .spl`.bin
+MAP=`basename $SRC .spl`.map
+
+./spl $SRC $ASM
+./as -o support.obj support.asm
+./as -o $OBJ $ASM
+./ld -rc 0xC0000000 -h -o $BIN -m $MAP support.obj $OBJ

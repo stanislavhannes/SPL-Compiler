@@ -159,8 +159,13 @@ public class Codegenerator {
 		@Override
 		public void visit(IntExp ie){
 			checkRegister(actReg);
-			emitRRI("add", actReg, 0, ie.val);
+			emitRRI("add", actReg, 0, ie.val, "int literal: " + ie.val);
 			actReg++;
+		}
+
+		@Override
+		public void visit(CompStm s) {
+			s.stms.accept(this);
 		}
 
 		@Override
@@ -208,13 +213,10 @@ public class Codegenerator {
 			VarEntry entryVar = (VarEntry) procEntry.localTable.lookup(sv.name);
 			checkRegister(actReg);
 
-			System.out.println("offset von " + sv.name.toString() + " : " + entryVar.offset);
+				emitRRI("add", actReg, 25, entryVar.offset, "local var: "+ sv.name);
 
-			if (entryVar.isRef) {
-				emitRRI("add", actReg, 25, entryVar.offset);
-				emitRRI("ldw", actReg, actReg, 0);
-			} else
-				emitRRI("add",actReg,25, -entryVar.offset);
+			if (entryVar.isRef)
+				emitRRI("ldw", actReg, actReg, 0);;
 
 			actReg++;
 		}
@@ -229,7 +231,7 @@ public class Codegenerator {
 		public void visit(AssignStm as){
 			as.var.accept(this); // actReg - 1;
 			as.exp.accept(this); // actReg;
-			emitRRI("stw", actReg-1, actReg-2, 0);  // speichert wert von actReg-2($8) + 0 in actReg-1($9)
+			emitRRI("stw", actReg-1, actReg-2, 0, "assignment");  // speichert wert von actReg-2($8) + 0 in actReg-1($9)
 			actReg = actReg - 2;  // release register
 		}
 
@@ -243,10 +245,10 @@ public class Codegenerator {
 			emitRRL("bgeu", actReg, actReg+1, "_indexError");
 
 			//berechnet offset innerhalb array
-			emitRRI("mul", actReg, actReg, av.dataType.byteSize);
+			emitRRI("mul", actReg, actReg, av.dataType.byteSize, "calc offset within array");
 
 			//neue adresse von array pos innerhalb arrays in actReg-1 speichern
-			emitRRI("add", actReg - 1, actReg - 1, actReg);
+			emitRRR("add", actReg - 1, actReg - 1, actReg);
 		}
 
 		@Override

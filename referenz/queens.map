@@ -1,0 +1,18 @@
+_indexError                     CODE           0x000019F8
+clearAll                        CODE           0x0000096C
+drawCircle                      CODE           0x00001440
+drawLine                        CODE           0x00000A10
+exit                            CODE           0x00000808
+main                            CODE           0x00001E1C
+printboard                      CODE           0x0000222C
+printc                          CODE           0x00000214
+printi                          CODE           0x0000015C
+readc                           CODE           0x000007E4
+readi                           CODE           0x00000654
+setPixel                        CODE           0x000009AC
+time                            CODE           0x0000080C
+try                             CODE           0x00001F68
+
+CODE     start 0xC0000000     size 0x0000232C
+DATA     start 0xC0003000     size 0x00000000
+BSS      start 0xC0003000     size 0x00000000
