@@ -100,8 +100,7 @@ class ProcedureBodyChecker {
 								+ av.row
 				);
 			}
-            //TODO: "illegal indexing..." fehler vor "...is not a variable"
-           // type = new ArrayType(0,SemanticChecker.intType);
+
 			av.var.accept(this);
 			av.dataType = type;
 			SemanticChecker.checkClass(type, ArrayType.class,"illegal indexing a non-array",av.row);
@@ -128,8 +127,6 @@ class ProcedureBodyChecker {
 			SemanticChecker.checkClass(entry, ProcEntry.class,
 					"call of non-procedure '"
 							+ cs.name.toString() + "'", cs.row);
-
-			//cs.args.accept(this);
 
             ListNodeIterator ArgsIt = cs.args.iterator();
             Iterator<ParamType> ParamsIt = ((ProcEntry) entry).paramTypes.iterator();
