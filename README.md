@@ -15,7 +15,8 @@ SPL ("Simple Programming Language") -----> ASM (Assembler)  -----> BIN (Binär f
 1. SPL-Quelldateien muessen die Endung '.spl' tragen, falls Sie
    die mitgelieferten Shellscripte verwenden wollen.
 
-2. Uebersetzen einer SPL-Quelldatei am Beispiel 'queens' und im Verzeichnis unter "./TOOLS/ECO32 Simulator & SPL Referenz Compiler":
+2. Uebersetzen einer SPL-Quelldatei am Beispiel 'queens' und im Verzeichnis unter  
+ *"./TOOLS/ECO32 Simulator & SPL Referenz Compiler"*:
    ``./compile queens.spl``  
    Dabei werden folgende Dateien erzeugt:
    * queens.asm  -  Output des Compilers (= queens in Assembler)
@@ -24,7 +25,7 @@ SPL ("Simple Programming Language") -----> ASM (Assembler)  -----> BIN (Binär f
    * queens.map  -  Lademap des queens-Programms (= wo ist welche Prozedur?)
 
 3. Laufenlassen eines uebersetzten Programms am Beispiel 'queens':
-   ./run queens.bin
+   ``./run queens.bin``
    Es wird damit der ECO32-Simulator gestartet und 'queens.bin' in den
    simulierten Hauptspeicher geladen. Mit dem Simulator-Kommando 'c'
    (continue) starten Sie Ihr Programm.
