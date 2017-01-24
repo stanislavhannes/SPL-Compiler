@@ -15,8 +15,7 @@ SPL ("Simple Programming Language") -----> ASM (Assembler)  -----> BIN (Binär f
 1. SPL-Quelldateien muessen die Endung '.spl' tragen, falls Sie
    die mitgelieferten Shellscripte verwenden wollen.
 
-2. Uebersetzen einer SPL-Quelldatei am Beispiel 'queens' und im Verzeichnis unter  
- *"./TOOLS/ECO32 Simulator & SPL Referenz Compiler"*:
+2. Übersetzen einer SPL-Quelldatei am Beispiel 'queens' und im Verzeichnis unter *./TOOLS/ECO32 Simulator & SPL Referenz Compiler*:  
    ``./compile queens.spl``  
    Dabei werden folgende Dateien erzeugt:
    * queens.asm  -  Output des Compilers (= queens in Assembler)
