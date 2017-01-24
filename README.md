@@ -27,19 +27,19 @@ SPL ("Simple Programming Language") -----> ASM (Assembler)  -----> BIN (Binär f
    * queens.map  -  Lademap des queens-Programms (= wo ist welche Prozedur?)
 
 3. Laufenlassen eines uebersetzten Programms am Beispiel 'queens':
-   ``./run queens.bin``
+   ``./run queens.bin``  
    Es wird damit der ECO32-Simulator gestartet und 'queens.bin' in den
    simulierten Hauptspeicher geladen. Mit dem Simulator-Kommando 'c'
-   (continue) starten Sie Ihr Programm.
+   (continue) starten Sie Ihr Programm.  
    Ein laufendes, beendetes oder auch abgestuerztes Programm koennen
    Sie mit der Tastenkombination 'Ctrl-C' im Simulator-Kontrollfenster
-   anhalten.
+   anhalten.  
    Zum Verlassen des Simulators gibt's das Kommando 'q' (quit).
    Mit '?' koennen Sie sich alle Kommandos des Simulators anzeigen
    lassen.
 
 4. Laufenlassen eines Programms mit Grafik geht genauso; Sie muessen
-   nur anstelle von 'run' das Script 'rungraph' verwenden.   
+   nur anstelle von 'run' das Script 'rungraph' verwenden.    
    Es ruft den Simulator mit der zusaetzlichen Option '-g' auf; diese installiert
    den Grafik-Controller im simulierten Rechner.
 
