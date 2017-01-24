@@ -7,7 +7,7 @@ SPL ("Simple Programming Language") -----> ASM (Assembler)  -----> BIN (Binär f
 # Compiler Verwenden
 
 1. Mit einem ``make`` die Java *.class Dateien kompilieren
-2. Programm kompilieren mit ``./spl [INPUT] [OUTPUT]`` z.B.
+2. Programm kompilieren mit **./spl [INPUT] [OUTPUT]** z.B.
 ``./spl TOOLS/SPL\ Programme/acker.spl TOOLS/Compiler\ Output/acker.asm``
 
 # Mit Referenz Compiler das SPL Programm starten
