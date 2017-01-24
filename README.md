@@ -19,6 +19,7 @@ SPL ("Simple Programming Language") -----> ASM (Assembler)  -----> BIN (Binär f
 *./TOOLS/ECO32 Simulator & SPL Referenz Compiler*: 
  
    ``./compile queens.spl``  
+
    Dabei werden folgende Dateien erzeugt:
    * queens.asm  -  Output des Compilers (= queens in Assembler)
    * queens.obj  -  Output des Assemblers (= queens im Bindeformat)
